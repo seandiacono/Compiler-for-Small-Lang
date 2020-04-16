@@ -1,0 +1,8 @@
+ff Pow(w: int, f:bool) : auto{
+    print w;
+    return w;
+}
+
+let x : auto = Pow(9, true);
+
+x = 4;
