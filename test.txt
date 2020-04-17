@@ -1,8 +1,9 @@
-ff Pow(w: int, f:bool) : auto{
-    print w;
-    return w;
+ff A(x:int) : auto{
+    ff B(y:int): auto{
+        return x > 5;
+    }
+
+    return B(1);
 }
 
-let x : auto = Pow(9, true);
-
-x = 4;
+let x : bool = A(1);

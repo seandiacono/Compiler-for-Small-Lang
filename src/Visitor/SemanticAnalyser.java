@@ -7,12 +7,24 @@ import java.util.Stack;
 import Parser.AstNodes.*;
 import javafx.util.Pair;
 
+class functionsAssignReturn{
+    String id;
+    Scope scope;
+    ArrayList<AstNode.varType> paramTypes;
+
+    functionsAssignReturn(String id, Scope scope, ArrayList<AstNode.varType> paramTypes) {
+        this.id = id;
+        this.scope = scope;
+        this.paramTypes = paramTypes;
+    }
+}
+
 public class SemanticAnalyser implements Visitor {
     private Stack<Scope> scopes = new Stack<>();
     private Scope currentScope = new Scope();
     private AstNode.varType expressionType;
     private boolean ignoreBlockPush = false;
-    private boolean hasReturn = false;
+    private Stack<functionsAssignReturn> functionsStack = new Stack<>();
 
     public SemanticAnalyser() {
         initialScope();
@@ -84,7 +96,7 @@ public class SemanticAnalyser implements Visitor {
     @Override
     public void visit(AstReturnNode v) {
         v.expr.accept(this);
-        hasReturn = true;
+        setReturnType();
     }
 
     @Override
@@ -105,42 +117,96 @@ public class SemanticAnalyser implements Visitor {
     @Override
     public void visit(AstFuncDeclNode v) {
         currentScope = scopes.peek();
-        hasReturn = false;
-        ArrayList<AstNode.varType> typeList = new ArrayList<>();
         HashMap<String, AstNode.varType> paramsMap = new HashMap<>();
+        ArrayList<AstNode.varType> paramTypes = new ArrayList<>();
         for (AstFormalParamNode param : v.params) {
-            typeList.add(param.type);
+            paramTypes.add(param.type);
             paramsMap.put(param.identifier.identifier, param.type);
         }
 
-        String id = v.identifier.identifier;
+        String functionIdentifier = v.identifier.identifier;
 
-        if (currentScope.lookupFunc(new Pair<>(id, typeList))) {
+        if (currentScope.lookupFunc(new Pair<>(functionIdentifier, paramTypes))) {
             System.out.println("Cannot declare function at line: " + v.lineNo + " because a function with the same signature has already been declared.");
             System.exit(1);
         }
 
         AstNode.varType returnType = v.returnType;
+        boolean hasReturn = false;
+        for (AstStatementNode statement: v.block.statements) {
+            if(checkForReturn(statement)){
+                hasReturn = true;
+                break;
+            }
+        }
+
+        if(!hasReturn){
+            System.out.println("Function declared at line: " + v.lineNo + " has no return statement in the block.");
+            System.exit(1);
+        }
         Scope tempScope = currentScope;
+        tempScope.insert(new Pair<>(functionIdentifier, paramTypes), returnType);
+        functionsAssignReturn function = new functionsAssignReturn(functionIdentifier, tempScope, paramTypes);
+        functionsStack.push(function);
 
         push();
         currentScope = scopes.peek();
         currentScope.varBindings = paramsMap;
         ignoreBlockPush = true;
         v.block.accept(this);
+    }
 
-        if (hasReturn) {
-            if (returnType == AstNode.varType.AUTO) {
-                returnType = expressionType;
-            } else if (expressionType != returnType) {
-                System.out.println("Expected return of type: " + returnType + " but got an expression of type: " + expressionType + " in function declared at line: " + v.lineNo);
-                System.exit(1);
-            }
-            tempScope.insert(new Pair<>(id, typeList), returnType);
-        } else {
-            System.out.println("Function declared at line: " + v.lineNo + " has no return statement in the block.");
+    private void setReturnType(){
+        functionsAssignReturn function = functionsStack.pop();
+        if (function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) == AstNode.varType.AUTO) {
+            function.scope.funcBindings.put(new Pair<>(function.id, function.paramTypes), expressionType);
+        } else if (expressionType != function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))) {
+            System.out.println("Expected return of type: " + function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) + " but got an expression of type: " + expressionType);
             System.exit(1);
         }
+    }
+
+    private boolean checkForReturn(AstStatementNode statement){
+        if(statement == null){
+            return false;
+        }
+        if(statement.getClass() == AstReturnNode.class){
+            return true;
+        }
+
+        if(statement.getClass() == AstBlockNode.class){
+            AstBlockNode block = (AstBlockNode) statement;
+            for(AstStatementNode statementPar : block.statements){
+                if(checkForReturn(statementPar)){
+                    return true;
+                }
+            }
+        }
+
+        if(statement.getClass() == AstIfNode.class){
+            AstIfNode ifStatement = (AstIfNode) statement;
+            AstBlockNode ifBlock = ifStatement.ifBlock;
+            AstBlockNode elseBlock = ifStatement.elseBlock;
+            if(checkForReturn(ifBlock) && checkForReturn(elseBlock)){
+                return true;
+            }
+        }
+
+        if(statement.getClass() == AstForNode.class){
+            AstForNode forStatement = (AstForNode) statement;
+            if(checkForReturn(forStatement.block)){
+                return true;
+            }
+        }
+
+        if(statement.getClass() == AstWhileNode.class){
+            AstWhileNode whileStatement = (AstWhileNode) statement;
+            if(checkForReturn(whileStatement.block)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -257,7 +323,6 @@ public class SemanticAnalyser implements Visitor {
 
     @Override
     public void visit(AstFunctionCall v) {
-        currentScope = scopes.peek();
         ArrayList<AstNode.varType> paramTypes = new ArrayList<>();
         String id = v.identifier.identifier;
 
@@ -266,14 +331,25 @@ public class SemanticAnalyser implements Visitor {
             paramTypes.add(expressionType);
         }
 
-        if(currentScope.lookupFunc(new Pair<>(id, paramTypes))){
-            expressionType = currentScope.funcBindings.get(new Pair<>(id, paramTypes));
-        }else{
+        Stack<Scope> tempStack = (Stack<Scope>) scopes.clone();
+        boolean found = false;
+
+        while (!tempStack.isEmpty()) {
+            Scope scope = tempStack.pop();
+            if (scope.lookupFunc(new Pair<>(id, paramTypes))) {
+                expressionType = scope.funcBindings.get(new Pair<>(id, paramTypes));
+                currentScope = scope;
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
             System.out.print("No function with identifer: " + id + " and param types: ");
             for (AstNode.varType type: paramTypes) {
-                System.out.print(", " + type);
+                System.out.print(type+ ", ");
             }
-            System.out.println(" for function call at line: " + v.lineNo);
+            System.out.println("for function call at line: " + v.lineNo);
             System.exit(1);
         }
     }
