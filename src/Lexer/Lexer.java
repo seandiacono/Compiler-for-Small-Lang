@@ -5,35 +5,27 @@ import java.io.FileReader;
 import java.util.*;
 import java.io.File;
 
+// this is a test commit
+
 public class Lexer {
     private static ArrayList<Character> inputChar = new ArrayList<>();
 
     private static int charCounter = 0;
     private static int lineCounter = 1;
 
-    private static int[][] transitionTable = {
-            {1, 2, -1, 5, 6, 7, 10, 11, 17, -1, -1},
-            {1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, 9, 8, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1},
-            {-1, -1, -1, 14, -1, -1, -1, 12, -1, -1, -1},
-            {12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {14, 14, 14, 15, 14, 14, 14, 14, 14, 14, 14},
-            {14, 14, 14, 15, 14, 14, 14, 16, 14, 14, 14},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    };
+    private static int[][] transitionTable = { { 1, 2, -1, 5, 6, 7, 10, 11, 17, -1, -1 },
+            { 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, 9, 8, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1 },
+            { -1, -1, -1, 14, -1, -1, -1, 12, -1, -1, -1 }, { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { 14, 14, 14, 15, 14, 14, 14, 14, 14, 14, 14 },
+            { 14, 14, 14, 15, 14, 14, 14, 16, 14, 14, 14 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, };
 
-
-    private static Set<String> keywords = new HashSet<>(Arrays.asList("float", "int", "bool", "auto", "true", "false", "and", "or", "not", "let", "print", "return", "if", "else", "for", "while", "ff"));
+    private static Set<String> keywords = new HashSet<>(Arrays.asList("float", "int", "bool", "auto", "true", "false",
+            "and", "or", "not", "let", "print", "return", "if", "else", "for", "while", "ff"));
     private static Set<Integer> finalStates = new HashSet<>(Arrays.asList(1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 17));
 
     public static void readInput(String filename) {
@@ -42,7 +34,7 @@ public class Lexer {
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             int c = 0;
-            while ((c = br.read()) != -1){
+            while ((c = br.read()) != -1) {
                 inputChar.add((char) c);
             }
         } catch (Exception e) {
@@ -64,24 +56,24 @@ public class Lexer {
 
         char currentChar;
 
-        while (charCounter < inputChar.size() && (inputChar.get(charCounter) == ' ' || inputChar.get(charCounter) == '\t')){
+        while (charCounter < inputChar.size()
+                && (inputChar.get(charCounter) == ' ' || inputChar.get(charCounter) == '\t')) {
             charCounter++;
         }
-
 
         do {
             currentChar = inputChar.get(charCounter);
             charCounter++;
 
-            if(currentChar == 32 && (currentState != 14 && currentState != 15 && currentState != 12)){
+            if (currentChar == 32 && (currentState != 14 && currentState != 15 && currentState != 12)) {
                 break;
             } else if ((currentChar == '\n' || currentChar == 13) && currentState != 12) {
                 charCounter++;
                 lineCounter++;
                 continue;
-            } else if ((currentChar == '\n' || currentChar == 13)){
+            } else if ((currentChar == '\n' || currentChar == 13)) {
                 lineCounter++;
-            } else if(currentChar == 32 || currentChar == '\t'){
+            } else if (currentChar == 32 || currentChar == '\t') {
                 continue;
             }
 
@@ -101,12 +93,12 @@ public class Lexer {
             visitedStates.pop();
             try {
                 lexeme = lexeme.substring(0, lexeme.length() - 1);
-            } catch (StringIndexOutOfBoundsException e){
+            } catch (StringIndexOutOfBoundsException e) {
             }
             charCounter--;
             try {
                 currentState = visitedStates.peek();
-            } catch (EmptyStackException e){
+            } catch (EmptyStackException e) {
                 currentState = 0;
             }
         }
@@ -117,7 +109,7 @@ public class Lexer {
             switch (currentState) {
                 case 1:
 
-                    if(keywords.contains(lexeme)) {
+                    if (keywords.contains(lexeme)) {
                         switch (lexeme) {
                             case "and":
                                 token.tokenIdentifier = token.tokenIdentifier.TOK_MULTIPLICATIONOP;
@@ -169,7 +161,7 @@ public class Lexer {
                                 token.tokenIdentifier = token.tokenIdentifier.TOK_FF;
                                 break;
                         }
-                    }else {
+                    } else {
                         token.tokenIdentifier = token.tokenIdentifier.TOK_IDENTIFIER;
                     }
                     break;
@@ -200,7 +192,7 @@ public class Lexer {
                 case 16:
                     token.tokenIdentifier = token.tokenIdentifier.TOK_COMMENT;
                 case 17:
-                    switch (lexeme){
+                    switch (lexeme) {
                         case "{":
                             token.tokenIdentifier = token.tokenIdentifier.TOK_LEFTBRACE;
                             break;
@@ -238,16 +230,16 @@ public class Lexer {
         return null;
     }
 
-    public static ArrayList<Token> getNextToken(){
+    public static ArrayList<Token> getNextToken() {
         ArrayList<Token> tokens = new ArrayList<>();
         while (true) {
             Token token;
             try {
                 token = getNextLexeme();
-                if(token.tokenIdentifier != token.tokenIdentifier.TOK_COMMENT) {
+                if (token.tokenIdentifier != token.tokenIdentifier.TOK_COMMENT) {
                     tokens.add(token);
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 token = new Token();
                 token.tokenIdentifier = token.tokenIdentifier.TOK_EOF;
                 tokens.add(token);
@@ -262,18 +254,30 @@ public class Lexer {
     }
 
     private static int charToIndex(char currentChar) {
-        if (Character.isDigit(currentChar)) return 1;
-        else if (Character.isLetter(currentChar) || currentChar == '_') return 0;
-        else if (currentChar == '.') return 2;
-        else if (currentChar == '*') return 3;
-        else if (currentChar == '+' || currentChar == '-') return 4;
-        else if (currentChar == '<' || currentChar == '>') return 5;
-        else if (currentChar == '=') return 6;
-        else if (currentChar == '/') return 7;
-        else if (currentChar == '(' || currentChar == ')' || currentChar == ':' || currentChar == ',' || currentChar == ';' || currentChar == '{' || currentChar == '}' )
+        if (Character.isDigit(currentChar))
+            return 1;
+        else if (Character.isLetter(currentChar) || currentChar == '_')
+            return 0;
+        else if (currentChar == '.')
+            return 2;
+        else if (currentChar == '*')
+            return 3;
+        else if (currentChar == '+' || currentChar == '-')
+            return 4;
+        else if (currentChar == '<' || currentChar == '>')
+            return 5;
+        else if (currentChar == '=')
+            return 6;
+        else if (currentChar == '/')
+            return 7;
+        else if (currentChar == '(' || currentChar == ')' || currentChar == ':' || currentChar == ','
+                || currentChar == ';' || currentChar == '{' || currentChar == '}')
             return 8;
-        else if (currentChar == '\n' || currentChar == 13) return 10;
-        else if (currentChar > 32 && currentChar < 126) return 9;
-        else return -1;
+        else if (currentChar == '\n' || currentChar == 13)
+            return 10;
+        else if (currentChar > 32 && currentChar < 126)
+            return 9;
+        else
+            return -1;
     }
 }
