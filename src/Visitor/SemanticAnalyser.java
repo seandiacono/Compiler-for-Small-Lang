@@ -7,7 +7,7 @@ import java.util.Stack;
 import Parser.AstNodes.*;
 import javafx.util.Pair;
 
-class functionsAssignReturn{
+class functionsAssignReturn {
     String id;
     Scope scope;
     ArrayList<AstNode.varType> paramTypes;
@@ -81,7 +81,8 @@ public class SemanticAnalyser implements Visitor {
 
         v.expr.accept(this);
         if (expressionType != AstNode.varType.BOOL) {
-            System.out.println("Expected conditional expression in for loop at line: " + v.lineNo + ", but got an expression of type: " + expressionType);
+            System.out.println("Expected conditional expression in for loop at line: " + v.lineNo
+                    + ", but got an expression of type: " + expressionType);
             System.exit(1);
         }
 
@@ -103,7 +104,8 @@ public class SemanticAnalyser implements Visitor {
     public void visit(AstWhileNode v) {
         v.expr.accept(this);
         if (expressionType != AstNode.varType.BOOL) {
-            System.out.println("Expected conditional expression in while loop at line: " + v.lineNo + ", but got an expression of type: " + expressionType);
+            System.out.println("Expected conditional expression in while loop at line: " + v.lineNo
+                    + ", but got an expression of type: " + expressionType);
             System.exit(1);
         }
         v.block.accept(this);
@@ -127,20 +129,21 @@ public class SemanticAnalyser implements Visitor {
         String functionIdentifier = v.identifier.identifier;
 
         if (currentScope.lookupFunc(new Pair<>(functionIdentifier, paramTypes))) {
-            System.out.println("Cannot declare function at line: " + v.lineNo + " because a function with the same signature has already been declared.");
+            System.out.println("Cannot declare function at line: " + v.lineNo
+                    + " because a function with the same signature has already been declared.");
             System.exit(1);
         }
 
         AstNode.varType returnType = v.returnType;
         boolean hasReturn = false;
-        for (AstStatementNode statement: v.block.statements) {
-            if(checkForReturn(statement)){
+        for (AstStatementNode statement : v.block.statements) {
+            if (checkForReturn(statement)) {
                 hasReturn = true;
                 break;
             }
         }
 
-        if(!hasReturn){
+        if (!hasReturn) {
             System.out.println("Function declared at line: " + v.lineNo + " has no return statement in the block.");
             System.exit(1);
         }
@@ -156,52 +159,54 @@ public class SemanticAnalyser implements Visitor {
         v.block.accept(this);
     }
 
-    private void setReturnType(){
+    private void setReturnType() {
         functionsAssignReturn function = functionsStack.pop();
         if (function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) == AstNode.varType.AUTO) {
             function.scope.funcBindings.put(new Pair<>(function.id, function.paramTypes), expressionType);
         } else if (expressionType != function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))) {
-            System.out.println("Expected return of type: " + function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) + " but got an expression of type: " + expressionType);
+            System.out.println("Expected return of type: "
+                    + function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))
+                    + " but got an expression of type: " + expressionType);
             System.exit(1);
         }
     }
 
-    private boolean checkForReturn(AstStatementNode statement){
-        if(statement == null){
+    private boolean checkForReturn(AstStatementNode statement) {
+        if (statement == null) {
             return false;
         }
-        if(statement.getClass() == AstReturnNode.class){
+        if (statement.getClass() == AstReturnNode.class) {
             return true;
         }
 
-        if(statement.getClass() == AstBlockNode.class){
+        if (statement.getClass() == AstBlockNode.class) {
             AstBlockNode block = (AstBlockNode) statement;
-            for(AstStatementNode statementPar : block.statements){
-                if(checkForReturn(statementPar)){
+            for (AstStatementNode statementPar : block.statements) {
+                if (checkForReturn(statementPar)) {
                     return true;
                 }
             }
         }
 
-        if(statement.getClass() == AstIfNode.class){
+        if (statement.getClass() == AstIfNode.class) {
             AstIfNode ifStatement = (AstIfNode) statement;
             AstBlockNode ifBlock = ifStatement.ifBlock;
             AstBlockNode elseBlock = ifStatement.elseBlock;
-            if(checkForReturn(ifBlock) && checkForReturn(elseBlock)){
+            if (checkForReturn(ifBlock) && checkForReturn(elseBlock)) {
                 return true;
             }
         }
 
-        if(statement.getClass() == AstForNode.class){
+        if (statement.getClass() == AstForNode.class) {
             AstForNode forStatement = (AstForNode) statement;
-            if(checkForReturn(forStatement.block)){
+            if (checkForReturn(forStatement.block)) {
                 return true;
             }
         }
 
-        if(statement.getClass() == AstWhileNode.class){
+        if (statement.getClass() == AstWhileNode.class) {
             AstWhileNode whileStatement = (AstWhileNode) statement;
-            if(checkForReturn(whileStatement.block)){
+            if (checkForReturn(whileStatement.block)) {
                 return true;
             }
         }
@@ -215,7 +220,8 @@ public class SemanticAnalyser implements Visitor {
         String id = v.identifier.identifier;
 
         if (currentScope.lookup(id)) {
-            System.out.println("Variable with identifier: \"" + v.identifier.identifier + "\"  at line: " + v.identifier.lineNo + " has already been declared.");
+            System.out.println("Variable with identifier: \"" + v.identifier.identifier + "\"  at line: "
+                    + v.identifier.lineNo + " has already been declared.");
             System.exit(1);
         } else {
 
@@ -223,7 +229,8 @@ public class SemanticAnalyser implements Visitor {
             if (v.type == AstNode.varType.AUTO) {
                 v.type = expressionType;
             } else if (expressionType != v.type) {
-                System.out.println("Incompatible types found at line: " + v.identifier.lineNo + ". Expected: " + v.type + " but got: " + expressionType);
+                System.out.println("Incompatible types found at line: " + v.identifier.lineNo + ". Expected: " + v.type
+                        + " but got: " + expressionType);
                 System.exit(1);
             }
             currentScope.insert(id, v.type);
@@ -235,7 +242,8 @@ public class SemanticAnalyser implements Visitor {
     public void visit(AstIfNode v) {
         v.expr.accept(this);
         if (expressionType != AstNode.varType.BOOL) {
-            System.out.println("Expected conditional expression in if statement at line: " + v.lineNo + ", but got an expression of type: " + expressionType);
+            System.out.println("Expected conditional expression in if statement at line: " + v.lineNo
+                    + ", but got an expression of type: " + expressionType);
             System.exit(1);
         }
 
@@ -261,7 +269,8 @@ public class SemanticAnalyser implements Visitor {
         v.expr.accept(this);
 
         if (expressionType != currentScope.varBindings.get(id)) {
-            System.out.println("Incompatible types found at line: " + v.identifier.lineNo + ". Expected: " + currentScope.varBindings.get(id) + " but got: " + expressionType);
+            System.out.println("Incompatible types found at line: " + v.identifier.lineNo + ". Expected: "
+                    + currentScope.varBindings.get(id) + " but got: " + expressionType);
             System.exit(1);
         }
     }
@@ -270,10 +279,12 @@ public class SemanticAnalyser implements Visitor {
     public void visit(AstUnaryNode v) {
         v.expr.accept(this);
         if (expressionType == AstNode.varType.BOOL && v.op.equals("-")) {
-            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + expressionType + ", on line: " + v.lineNo);
+            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + expressionType
+                    + ", on line: " + v.lineNo);
             System.exit(1);
         } else if (expressionType == AstNode.varType.INT && v.op.equals("not")) {
-            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + expressionType + ", on line: " + v.lineNo);
+            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + expressionType
+                    + ", on line: " + v.lineNo);
             System.exit(1);
         }
     }
@@ -308,15 +319,21 @@ public class SemanticAnalyser implements Visitor {
         rightSideType = expressionType;
 
         if (leftSideType != rightSideType) {
-            System.out.println("Mismatched types in expression at line: " + v.lineNo + ". Cannot perform operation on: " + leftSideType + " and " + rightSideType);
+            System.out.println("Mismatched types in expression at line: " + v.lineNo + ". Cannot perform operation on: "
+                    + leftSideType + " and " + rightSideType);
             System.exit(1);
-        } else if ((v.op.equals("+") || v.op.equals("-") || v.op.equals("*") || v.op.equals("/")) && leftSideType == AstNode.varType.BOOL) {
-            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + leftSideType + ", on line: " + v.lineNo);
+        } else if ((v.op.equals("+") || v.op.equals("-") || v.op.equals("*") || v.op.equals("/"))
+                && leftSideType == AstNode.varType.BOOL) {
+            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + leftSideType
+                    + ", on line: " + v.lineNo);
             System.exit(1);
-        } else if ((v.op.equals("and") || v.op.equals("or")) && (leftSideType == AstNode.varType.INT || leftSideType == AstNode.varType.FLOAT)) {
-            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + leftSideType + ", on line: " + v.lineNo);
+        } else if ((v.op.equals("and") || v.op.equals("or"))
+                && (leftSideType == AstNode.varType.INT || leftSideType == AstNode.varType.FLOAT)) {
+            System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + leftSideType
+                    + ", on line: " + v.lineNo);
             System.exit(1);
-        } else if (v.op.equals("<") || v.op.equals(">") || v.op.equals("==") || v.op.equals("<>") || v.op.equals("<=") || v.op.equals(">=")) {
+        } else if (v.op.equals("<") || v.op.equals(">") || v.op.equals("==") || v.op.equals("<>") || v.op.equals("<=")
+                || v.op.equals(">=")) {
             expressionType = AstNode.varType.BOOL;
         }
     }
@@ -326,7 +343,7 @@ public class SemanticAnalyser implements Visitor {
         ArrayList<AstNode.varType> paramTypes = new ArrayList<>();
         String id = v.identifier.identifier;
 
-        for(AstActualParam param: v.params){
+        for (AstActualParam param : v.params) {
             param.accept(this);
             paramTypes.add(expressionType);
         }
@@ -344,10 +361,10 @@ public class SemanticAnalyser implements Visitor {
             }
         }
 
-        if(!found){
+        if (!found) {
             System.out.print("No function with identifer: " + id + " and param types: ");
-            for (AstNode.varType type: paramTypes) {
-                System.out.print(type+ ", ");
+            for (AstNode.varType type : paramTypes) {
+                System.out.print(type + ", ");
             }
             System.out.println("for function call at line: " + v.lineNo);
             System.exit(1);

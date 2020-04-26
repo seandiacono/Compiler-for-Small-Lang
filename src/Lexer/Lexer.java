@@ -3,6 +3,9 @@ package Lexer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
+
+import Lexer.Token.tokenIdentifier;
+
 import java.io.File;
 
 // this is a test commit
@@ -30,13 +33,14 @@ public class Lexer {
 
     public static void readInput(String filename) {
         try {
-            File f = new File("test.txt");
+            File f = new File(filename);
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             int c = 0;
             while ((c = br.read()) != -1) {
                 inputChar.add((char) c);
             }
+            br.close();
         } catch (Exception e) {
             System.out.println("An error occured when reading file.");
             System.out.println(e.getMessage());
@@ -112,112 +116,112 @@ public class Lexer {
                     if (keywords.contains(lexeme)) {
                         switch (lexeme) {
                             case "and":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_MULTIPLICATIONOP;
+                                token.tokenIdentifier = tokenIdentifier.TOK_MULTIPLICATIONOP;
                                 break;
                             case "or":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_ADDITIONOP;
+                                token.tokenIdentifier = tokenIdentifier.TOK_ADDITIONOP;
                                 break;
                             case "true":
                             case "false":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_BOOLEAN;
+                                token.tokenIdentifier = tokenIdentifier.TOK_BOOLEAN;
                                 break;
                             case "float":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_FLOATTYPE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_FLOATTYPE;
                                 break;
                             case "int":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_INTTYPE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_INTTYPE;
                                 break;
                             case "bool":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_BOOLTYPE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_BOOLTYPE;
                                 break;
                             case "auto":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_AUTOTYPE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_AUTOTYPE;
                                 break;
                             case "not":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_NOT;
+                                token.tokenIdentifier = tokenIdentifier.TOK_NOT;
                                 break;
                             case "let":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_LET;
+                                token.tokenIdentifier = tokenIdentifier.TOK_LET;
                                 break;
                             case "print":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_PRINT;
+                                token.tokenIdentifier = tokenIdentifier.TOK_PRINT;
                                 break;
                             case "return":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_RETURN;
+                                token.tokenIdentifier = tokenIdentifier.TOK_RETURN;
                                 break;
                             case "if":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_IF;
+                                token.tokenIdentifier = tokenIdentifier.TOK_IF;
                                 break;
                             case "else":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_ELSE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_ELSE;
                                 break;
                             case "for":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_FOR;
+                                token.tokenIdentifier = tokenIdentifier.TOK_FOR;
                                 break;
                             case "while":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_WHILE;
+                                token.tokenIdentifier = tokenIdentifier.TOK_WHILE;
                                 break;
                             case "ff":
-                                token.tokenIdentifier = token.tokenIdentifier.TOK_FF;
+                                token.tokenIdentifier = tokenIdentifier.TOK_FF;
                                 break;
                         }
                     } else {
-                        token.tokenIdentifier = token.tokenIdentifier.TOK_IDENTIFIER;
+                        token.tokenIdentifier = tokenIdentifier.TOK_IDENTIFIER;
                     }
                     break;
                 case 2:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_INTEGER;
+                    token.tokenIdentifier = tokenIdentifier.TOK_INTEGER;
                     break;
                 case 4:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_FLOAT;
+                    token.tokenIdentifier = tokenIdentifier.TOK_FLOAT;
                     break;
                 case 5:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_MULTIPLICATIONOP;
+                    token.tokenIdentifier = tokenIdentifier.TOK_MULTIPLICATIONOP;
                     break;
                 case 6:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_ADDITIONOP;
+                    token.tokenIdentifier = tokenIdentifier.TOK_ADDITIONOP;
                     break;
                 case 7:
                 case 8:
                 case 9:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_RELATIONALOP;
+                    token.tokenIdentifier = tokenIdentifier.TOK_RELATIONALOP;
                     break;
                 case 10:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_EQUALS;
+                    token.tokenIdentifier = tokenIdentifier.TOK_EQUALS;
                     break;
                 case 11:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_MULTIPLICATIONOP;
+                    token.tokenIdentifier = tokenIdentifier.TOK_MULTIPLICATIONOP;
                     break;
                 case 13:
                 case 16:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_COMMENT;
+                    token.tokenIdentifier = tokenIdentifier.TOK_COMMENT;
                 case 17:
                     switch (lexeme) {
                         case "{":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_LEFTBRACE;
+                            token.tokenIdentifier = tokenIdentifier.TOK_LEFTBRACE;
                             break;
                         case "}":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_RIGHTBRACE;
+                            token.tokenIdentifier = tokenIdentifier.TOK_RIGHTBRACE;
                             break;
                         case "(":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_LEFTBRACKET;
+                            token.tokenIdentifier = tokenIdentifier.TOK_LEFTBRACKET;
                             break;
                         case ")":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_RIGHTBRACKET;
+                            token.tokenIdentifier = tokenIdentifier.TOK_RIGHTBRACKET;
                             break;
                         case ":":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_COLON;
+                            token.tokenIdentifier = tokenIdentifier.TOK_COLON;
                             break;
                         case ";":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_SEMICOLON;
+                            token.tokenIdentifier = tokenIdentifier.TOK_SEMICOLON;
                             break;
                         case ",":
-                            token.tokenIdentifier = token.tokenIdentifier.TOK_COMMA;
+                            token.tokenIdentifier = tokenIdentifier.TOK_COMMA;
                             break;
                     }
                     break;
                 default:
-                    token.tokenIdentifier = token.tokenIdentifier.TOK_ERROR;
+                    token.tokenIdentifier = tokenIdentifier.TOK_ERROR;
                     break;
             }
             token.lineNumber = lineCounter;
@@ -236,12 +240,12 @@ public class Lexer {
             Token token;
             try {
                 token = getNextLexeme();
-                if (token.tokenIdentifier != token.tokenIdentifier.TOK_COMMENT) {
+                if (token.tokenIdentifier != tokenIdentifier.TOK_COMMENT) {
                     tokens.add(token);
                 }
             } catch (Exception e) {
                 token = new Token();
-                token.tokenIdentifier = token.tokenIdentifier.TOK_EOF;
+                token.tokenIdentifier = tokenIdentifier.TOK_EOF;
                 tokens.add(token);
                 break;
             }

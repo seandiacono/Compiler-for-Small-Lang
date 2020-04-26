@@ -2,6 +2,7 @@ package Parser;
 
 import Parser.AstNodes.*;
 import Lexer.*;
+import Lexer.Token.tokenIdentifier;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ public class Parser {
         ArrayList<AstStatementNode> statements = new ArrayList<>();
         changeCurrentToken();
 
-        while (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_EOF) {
+        while (currentToken.tokenIdentifier != tokenIdentifier.TOK_EOF) {
             statements.add(parseStatement());
             changeCurrentToken();
         }
@@ -30,54 +31,56 @@ public class Parser {
             try {
                 nextToken = tokens.get(0);
             } catch (IndexOutOfBoundsException e) {
-                nextToken.tokenIdentifier = nextToken.tokenIdentifier.TOK_EOF;
+                nextToken.tokenIdentifier = tokenIdentifier.TOK_EOF;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Empty Program");
             System.exit(1);
         }
     }
 
     private AstStatementNode parseStatement() {
-        if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_LET) {
+        if (currentToken.tokenIdentifier == tokenIdentifier.TOK_LET) {
             return parseVariableDecl();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_IDENTIFIER) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_IDENTIFIER) {
             return parseAssignment(false);
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_PRINT) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_PRINT) {
             return parsePrint();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_IF) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_IF) {
             return parseIf();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_FOR) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_FOR) {
             return parseFor();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_WHILE) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_WHILE) {
             return parseWhile();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_RETURN) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_RETURN) {
             return parseReturn();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_FF) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_FF) {
             return parseFuncDecl();
-        } else if (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_LEFTBRACE) {
+        } else if (currentToken.tokenIdentifier == tokenIdentifier.TOK_LEFTBRACE) {
             return parseBlock();
         } else {
-            System.out.println("Unexpected statement beginning with: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+            System.out.println("Unexpected statement beginning with: '" + currentToken.lexeme + "' at line: "
+                    + currentToken.lineNumber);
             System.exit(1);
         }
         return null;
     }
 
-
     private AstVarDeclNode parseVariableDecl() {
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_IDENTIFIER) {
-            System.out.println("Expected identifier, but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_IDENTIFIER) {
+            System.out.println(
+                    "Expected identifier, but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_COLON) {
-            System.out.println("Expected ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_COLON) {
+            System.out.println(
+                    "Expected ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
@@ -85,8 +88,9 @@ public class Parser {
         AstNode.varType type = parseVarType();
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_EQUALS) {
-            System.out.println("Expected '=', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_EQUALS) {
+            System.out.println(
+                    "Expected '=', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
         }
 
         AstExpressionNode expr = parseExpr();
@@ -96,62 +100,67 @@ public class Parser {
         return new AstVarDeclNode(identifier, currentToken.lineNumber, type, expr);
     }
 
-    private AstAssignNode parseAssignment(boolean forLoop){
+    private AstAssignNode parseAssignment(boolean forLoop) {
         AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_EQUALS){
-            System.out.println("Expected '=', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_EQUALS) {
+            System.out.println(
+                    "Expected '=', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         AstExpressionNode expr = parseExpr();
 
-        if(!forLoop) {
+        if (!forLoop) {
             checkForSemicolon();
         }
 
         return new AstAssignNode(identifier, expr, currentToken.lineNumber);
     }
 
-    private AstPrintNode parsePrint(){
+    private AstPrintNode parsePrint() {
         AstExpressionNode expr = parseExpr();
         checkForSemicolon();
         return new AstPrintNode(expr, currentToken.lineNumber);
     }
 
-    private AstIfNode parseIf(){
+    private AstIfNode parseIf() {
         int lineNo = currentToken.lineNumber;
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACKET){
-            System.out.println("Expected '(', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACKET) {
+            System.out.println(
+                    "Expected '(', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         AstExpressionNode conditionExpr = parseExpr();
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET){
-            System.out.println("Expected ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
+            System.out.println(
+                    "Expected ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACE){
-            System.out.println("Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACE) {
+            System.out.println(
+                    "Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
         AstBlockNode ifBlock = parseBlock();
 
-        if (nextToken.tokenIdentifier != nextToken.tokenIdentifier.TOK_ELSE){
+        if (nextToken.tokenIdentifier != tokenIdentifier.TOK_ELSE) {
             return new AstIfNode(conditionExpr, ifBlock, lineNo);
         }
 
         changeCurrentToken();
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACE){
-            System.out.println("Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACE) {
+            System.out.println(
+                    "Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
         AstBlockNode elseBlock = parseBlock();
@@ -159,20 +168,20 @@ public class Parser {
         return new AstIfNode(conditionExpr, ifBlock, elseBlock, lineNo);
     }
 
-    private AstForNode parseFor(){
+    private AstForNode parseFor() {
         int lineNo = currentToken.lineNumber;
         AstVarDeclNode varDecl = null;
         AstAssignNode varAssignment = null;
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACKET){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACKET) {
             System.out.println("Expected '(' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
-        if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_LET){
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_LET) {
             changeCurrentToken();
             varDecl = parseVariableDecl();
-        }else {
+        } else {
             checkForSemicolon();
         }
 
@@ -180,20 +189,21 @@ public class Parser {
 
         checkForSemicolon();
 
-        if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_IDENTIFIER){
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_IDENTIFIER) {
             changeCurrentToken();
             varAssignment = parseAssignment(true);
         }
 
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
             System.out.println("Expected ')' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACE){
-            System.out.println("Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACE) {
+            System.out.println(
+                    "Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
         AstBlockNode forBlock = parseBlock();
@@ -201,10 +211,10 @@ public class Parser {
         return new AstForNode(varDecl, expr, varAssignment, forBlock, lineNo);
     }
 
-    private AstWhileNode parseWhile(){
+    private AstWhileNode parseWhile() {
         int lineNo = currentToken.lineNumber;
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACKET){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACKET) {
             System.out.println("Expected '(' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
             System.exit(1);
         }
@@ -212,14 +222,15 @@ public class Parser {
         AstExpressionNode expr = parseExpr();
 
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
             System.out.println("Expected ')' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACE){
-            System.out.println("Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACE) {
+            System.out.println(
+                    "Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
@@ -228,85 +239,91 @@ public class Parser {
         return new AstWhileNode(expr, block, lineNo);
     }
 
-    private AstReturnNode parseReturn(){
+    private AstReturnNode parseReturn() {
         int lineNo = currentToken.lineNumber;
         AstExpressionNode expr = parseExpr();
         checkForSemicolon();
         return new AstReturnNode(expr, lineNo);
     }
 
-    private AstFuncDeclNode parseFuncDecl(){
+    private AstFuncDeclNode parseFuncDecl() {
         int lineNo = currentToken.lineNumber;
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_IDENTIFIER){
-            System.out.println("Expected an Identfier, but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_IDENTIFIER) {
+            System.out.println("Expected an Identfier, but got: '" + currentToken.lexeme + "' at line: "
+                    + currentToken.lineNumber);
             System.exit(1);
         }
 
         AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACKET){
-            System.out.println("Expected '(', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACKET) {
+            System.out.println(
+                    "Expected '(', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         ArrayList<AstFormalParamNode> params = new ArrayList<>();
-        if (nextToken.tokenIdentifier != nextToken.tokenIdentifier.TOK_RIGHTBRACKET){
+        if (nextToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
             params.add(parseFormalParam());
 
             changeCurrentToken();
-            while (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_COMMA){
+            while (currentToken.tokenIdentifier == tokenIdentifier.TOK_COMMA) {
                 params.add(parseFormalParam());
                 changeCurrentToken();
             }
 
-            if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET){
-                System.out.println("Expected a ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+            if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
+                System.out.println(
+                        "Expected a ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
                 System.exit(1);
             }
-        }else{
+        } else {
             changeCurrentToken();
         }
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_COLON){
-            System.out.println("Expected a ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_COLON) {
+            System.out.println(
+                    "Expected a ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
         changeCurrentToken();
         AstNode.varType type = parseVarType();
 
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACE){
-            System.out.println("Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACE) {
+            System.out.println(
+                    "Expected '{', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
         AstBlockNode block = parseBlock();
 
-        return new AstFuncDeclNode(identifier,params, block, type, lineNo);
+        return new AstFuncDeclNode(identifier, params, block, type, lineNo);
     }
 
-    private AstFunctionCall parseFuncCall(){
+    private AstFunctionCall parseFuncCall() {
         AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_LEFTBRACKET){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_LEFTBRACKET) {
             System.out.println("Expected '(' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         ArrayList<AstActualParam> params = new ArrayList<>();
-        if(nextToken.tokenIdentifier != nextToken.tokenIdentifier.TOK_RIGHTBRACKET) {
+        if (nextToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
             params.add(parseActualParam());
 
             changeCurrentToken();
-            while (currentToken.tokenIdentifier == currentToken.tokenIdentifier.TOK_COMMA){
+            while (currentToken.tokenIdentifier == tokenIdentifier.TOK_COMMA) {
                 params.add(parseActualParam());
                 changeCurrentToken();
             }
 
-            if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET){
-                System.out.println("Expected a ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+            if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
+                System.out.println(
+                        "Expected a ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
                 System.exit(1);
             }
         }
@@ -314,45 +331,48 @@ public class Parser {
         return new AstFunctionCall(identifier, params, currentToken.lineNumber);
     }
 
-    private AstActualParam parseActualParam(){
+    private AstActualParam parseActualParam() {
         return new AstActualParam(parseExpr(), currentToken.lineNumber);
     }
 
-    private AstFormalParamNode parseFormalParam(){
+    private AstFormalParamNode parseFormalParam() {
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_IDENTIFIER){
-            System.out.println("Expected an Identfier, but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_IDENTIFIER) {
+            System.out.println("Expected an Identfier, but got: '" + currentToken.lexeme + "' at line: "
+                    + currentToken.lineNumber);
             System.exit(1);
         }
         AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
 
         changeCurrentToken();
-        if(currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_COLON){
-            System.out.println("Expected a ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_COLON) {
+            System.out.println(
+                    "Expected a ':', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         changeCurrentToken();
         AstNode.varType type = parseVarType();
-        if(type == AstNode.varType.AUTO){
-            System.out.println("Formal parameter can not take type of AUTO at line: " +currentToken.lineNumber);
+        if (type == AstNode.varType.AUTO) {
+            System.out.println("Formal parameter can not take type of AUTO at line: " + currentToken.lineNumber);
             System.exit(1);
         }
 
         return new AstFormalParamNode(identifier, type, currentToken.lineNumber);
     }
 
-    private AstBlockNode parseBlock(){
+    private AstBlockNode parseBlock() {
         int lineNo = currentToken.lineNumber;
 
         ArrayList<AstStatementNode> statements = new ArrayList<>();
         changeCurrentToken();
-        while (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACE && currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_EOF){
+        while (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACE
+                && currentToken.tokenIdentifier != tokenIdentifier.TOK_EOF) {
             statements.add(parseStatement());
             changeCurrentToken();
         }
 
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACE){
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACE) {
             System.out.println("Block which started at line: " + lineNo + " was never closed with a '}'");
             System.exit(1);
         }
@@ -360,10 +380,11 @@ public class Parser {
         return new AstBlockNode(statements, lineNo);
     }
 
-    private void checkForSemicolon(){
+    private void checkForSemicolon() {
         changeCurrentToken();
-        if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_SEMICOLON){
-            System.out.println("Expected ';', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+        if (currentToken.tokenIdentifier != tokenIdentifier.TOK_SEMICOLON) {
+            System.out.println(
+                    "Expected ';', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
             System.exit(1);
         }
     }
@@ -379,7 +400,8 @@ public class Parser {
             case TOK_AUTOTYPE:
                 return AstNode.varType.AUTO;
             default:
-                System.out.println("Expected type for variable, but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+                System.out.println("Expected type for variable, but got: '" + currentToken.lexeme + "' at line: "
+                        + currentToken.lineNumber);
                 System.exit(1);
                 break;
         }
@@ -388,7 +410,7 @@ public class Parser {
 
     private AstExpressionNode parseExpr() {
         AstExpressionNode simpleExpression = parseSimpleExpr();
-        if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_RELATIONALOP){
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_RELATIONALOP) {
             changeCurrentToken();
             String op = currentToken.lexeme;
             AstExpressionNode expr = parseExpr();
@@ -400,7 +422,7 @@ public class Parser {
 
     private AstExpressionNode parseSimpleExpr() {
         AstExpressionNode term = parseTerm();
-        if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_ADDITIONOP){
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_ADDITIONOP) {
             changeCurrentToken();
             String op = currentToken.lexeme;
             AstExpressionNode simpleExpr = parseSimpleExpr();
@@ -412,14 +434,14 @@ public class Parser {
 
     private AstExpressionNode parseTerm() {
         AstExpressionNode factor = parseFactor();
-        if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_MULTIPLICATIONOP){
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_MULTIPLICATIONOP) {
             changeCurrentToken();
             String op = currentToken.lexeme;
             AstExpressionNode term = parseTerm();
             return new AstSumBoolExprNode(op, factor, term, currentToken.lineNumber);
         }
 
-        return  factor;
+        return factor;
     }
 
     private AstExpressionNode parseFactor() {
@@ -432,15 +454,16 @@ public class Parser {
             case TOK_BOOLEAN:
                 return new AstBoolLiteralNode(Boolean.parseBoolean(currentToken.lexeme), currentToken.lineNumber);
             case TOK_IDENTIFIER:
-                if(nextToken.tokenIdentifier == nextToken.tokenIdentifier.TOK_LEFTBRACKET){
+                if (nextToken.tokenIdentifier == tokenIdentifier.TOK_LEFTBRACKET) {
                     return parseFuncCall();
                 }
                 return new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
             case TOK_LEFTBRACKET:
                 AstExpressionNode expr = parseExpr();
                 changeCurrentToken();
-                if (currentToken.tokenIdentifier != currentToken.tokenIdentifier.TOK_RIGHTBRACKET) {
-                    System.out.println("Expected ')' but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+                if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTBRACKET) {
+                    System.out.println(
+                            "Expected ')' but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
                     System.exit(1);
                 }
                 return expr;
@@ -450,7 +473,8 @@ public class Parser {
                 AstExpressionNode exprToPass = parseExpr();
                 return new AstUnaryNode(op, exprToPass, currentToken.lineNumber);
             default:
-                System.out.println("Unexpected Expression beginning with: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+                System.out.println("Unexpected Expression beginning with: '" + currentToken.lexeme + "' at line: "
+                        + currentToken.lineNumber);
                 System.exit(1);
         }
         return null;
