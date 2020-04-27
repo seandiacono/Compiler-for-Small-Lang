@@ -1,9 +1,9 @@
-ff A(x:int) : auto{
-    ff B(y:int): auto{
-        return x > 5;
+ff test(test:bool) : int{
+    if(test){
+        return 4;
+    }else{
+        return 3;
     }
-
-    return B(1);
 }
 
-let x : bool = A(1);
+print test(false);

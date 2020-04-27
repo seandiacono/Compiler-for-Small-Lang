@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import Parser.AstNodes.*;
+import Parser.AstNodes.AstNode.varType;
 import javafx.util.Pair;
 
 class functionsAssignReturn {
@@ -157,10 +158,11 @@ public class SemanticAnalyser implements Visitor {
         currentScope.varBindings = paramsMap;
         ignoreBlockPush = true;
         v.block.accept(this);
+        functionsStack.pop();
     }
 
     private void setReturnType() {
-        functionsAssignReturn function = functionsStack.pop();
+        functionsAssignReturn function = functionsStack.peek();
         if (function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) == AstNode.varType.AUTO) {
             function.scope.funcBindings.put(new Pair<>(function.id, function.paramTypes), expressionType);
         } else if (expressionType != function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))) {
@@ -334,7 +336,13 @@ public class SemanticAnalyser implements Visitor {
             System.exit(1);
         } else if (v.op.equals("<") || v.op.equals(">") || v.op.equals("==") || v.op.equals("<>") || v.op.equals("<=")
                 || v.op.equals(">=")) {
-            expressionType = AstNode.varType.BOOL;
+            if (leftSideType != varType.BOOL) {
+                expressionType = AstNode.varType.BOOL;
+            } else {
+                System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + leftSideType
+                        + ", on line: " + v.lineNo);
+                System.exit(1);
+            }
         }
     }
 

@@ -326,8 +326,9 @@ public class Parser {
                         "Expected a ')', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
                 System.exit(1);
             }
+        } else {
+            changeCurrentToken();
         }
-
         return new AstFunctionCall(identifier, params, currentToken.lineNumber);
     }
 
