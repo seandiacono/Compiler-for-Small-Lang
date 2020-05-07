@@ -8,6 +8,7 @@ import Parser.AstNodes.*;
 import Parser.AstNodes.AstNode.varType;
 import javafx.util.Pair;
 
+// keep track of functions to check return type
 class functionsAssignReturn {
     String id;
     Scope scope;
@@ -27,24 +28,28 @@ public class SemanticAnalyser implements Visitor {
     private boolean ignoreBlockPush = false;
     private Stack<functionsAssignReturn> functionsStack = new Stack<>();
 
+    // push global scope
     public SemanticAnalyser() {
-        initialScope();
+        push();
     }
 
+    /**
+     * [push push a new scope to the stack]
+     */
     private void push() {
         scopes.push(new Scope());
     }
 
+    /**
+     * [pop pop a scope from the stack]
+     */
     private void pop() {
         scopes.pop();
     }
 
-    private void initialScope() {
-        push();
-    }
-
     @Override
     public void visit(AstProgramNode v) {
+        // all statements in the program
         for (AstStatementNode statement : v.statements) {
             statement.accept(this);
         }
@@ -62,7 +67,7 @@ public class SemanticAnalyser implements Visitor {
 
     @Override
     public void visit(AstBlockNode v) {
-        if (!ignoreBlockPush) {
+        if (!ignoreBlockPush) { // do not push a new scope if it has already been pushed
             push();
         } else {
             ignoreBlockPush = false;
@@ -76,18 +81,18 @@ public class SemanticAnalyser implements Visitor {
     @Override
     public void visit(AstForNode v) {
         push();
-        if (v.varDecl != null) {
+        if (v.varDecl != null) {// check if for loop has var decl
             v.varDecl.accept(this);
         }
 
         v.expr.accept(this);
-        if (expressionType != AstNode.varType.BOOL) {
+        if (expressionType != AstNode.varType.BOOL) {// make sure condition is of type BOOl
             System.out.println("Expected conditional expression in for loop at line: " + v.lineNo
                     + ", but got an expression of type: " + expressionType);
             System.exit(1);
         }
 
-        if (v.assignNode != null) {
+        if (v.assignNode != null) {// check if for loop has var assignment
             v.assignNode.accept(this);
         }
 
@@ -98,7 +103,7 @@ public class SemanticAnalyser implements Visitor {
     @Override
     public void visit(AstReturnNode v) {
         v.expr.accept(this);
-        setReturnType();
+        setReturnType(); // check return type of function to see if they match
     }
 
     @Override
@@ -122,6 +127,7 @@ public class SemanticAnalyser implements Visitor {
         currentScope = scopes.peek();
         HashMap<String, AstNode.varType> paramsMap = new HashMap<>();
         ArrayList<AstNode.varType> paramTypes = new ArrayList<>();
+        // store parameters
         for (AstFormalParamNode param : v.params) {
             paramTypes.add(param.type);
             paramsMap.put(param.identifier.identifier, param.type);
@@ -129,12 +135,14 @@ public class SemanticAnalyser implements Visitor {
 
         String functionIdentifier = v.identifier.identifier;
 
-        if (currentScope.lookupFunc(new Pair<>(functionIdentifier, paramTypes))) {
+        // check if function has already been declared
+        if (currentScope.lookup(new Pair<>(functionIdentifier, paramTypes))) {
             System.out.println("Cannot declare function at line: " + v.lineNo
                     + " because a function with the same signature has already been declared.");
             System.exit(1);
         }
 
+        // check if function has a return statement
         AstNode.varType returnType = v.returnType;
         boolean hasReturn = false;
         for (AstStatementNode statement : v.block.statements) {
@@ -150,12 +158,17 @@ public class SemanticAnalyser implements Visitor {
         }
         Scope tempScope = currentScope;
         tempScope.insert(new Pair<>(functionIdentifier, paramTypes), returnType);
+        // add function to stack to check if return type matches actual return
+        // expression type
         functionsAssignReturn function = new functionsAssignReturn(functionIdentifier, tempScope, paramTypes);
         functionsStack.push(function);
 
+        // push a new scope
         push();
         currentScope = scopes.peek();
+        // add params to the new scope
         currentScope.varBindings = paramsMap;
+        // ignore the block push since a new scope has already been pushed
         ignoreBlockPush = true;
         v.block.accept(this);
         functionsStack.pop();
@@ -163,9 +176,10 @@ public class SemanticAnalyser implements Visitor {
 
     private void setReturnType() {
         functionsAssignReturn function = functionsStack.peek();
-        if (function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) == AstNode.varType.AUTO) {
+        // set the return type to the type of the return expression if the return type was auto or else check that the return type matches the one stored
+        if (function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes)) == AstNode.varType.AUTO) { 
             function.scope.funcBindings.put(new Pair<>(function.id, function.paramTypes), expressionType);
-        } else if (expressionType != function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))) {
+        } else if (expressionType != function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))) { 
             System.out.println("Expected return of type: "
                     + function.scope.funcBindings.get(new Pair<>(function.id, function.paramTypes))
                     + " but got an expression of type: " + expressionType);
@@ -173,6 +187,13 @@ public class SemanticAnalyser implements Visitor {
         }
     }
 
+    /**
+     * [checkForReturn recursively checks that a statement contains or is a return
+     * statemen]
+     *
+     * @return boolean [true if a return statement was found and false if one wasn't
+     *         found]
+     */
     private boolean checkForReturn(AstStatementNode statement) {
         if (statement == null) {
             return false;
@@ -251,6 +272,7 @@ public class SemanticAnalyser implements Visitor {
 
         v.ifBlock.accept(this);
 
+        // check if if statement has an else block
         if (v.elseBlock != null) {
             v.elseBlock.accept(this);
         }
@@ -267,10 +289,11 @@ public class SemanticAnalyser implements Visitor {
         String id = v.identifier.identifier;
 
         v.identifier.accept(this);
+        AstNode.varType identifierType = expressionType;
 
         v.expr.accept(this);
 
-        if (expressionType != currentScope.varBindings.get(id)) {
+        if (expressionType != identifierType) {
             System.out.println("Incompatible types found at line: " + v.identifier.lineNo + ". Expected: "
                     + currentScope.varBindings.get(id) + " but got: " + expressionType);
             System.exit(1);
@@ -280,6 +303,7 @@ public class SemanticAnalyser implements Visitor {
     @Override
     public void visit(AstUnaryNode v) {
         v.expr.accept(this);
+        // check if operator matches variable type
         if (expressionType == AstNode.varType.BOOL && v.op.equals("-")) {
             System.out.println("\"" + v.op + "\" cannot be performed on expression of type: " + expressionType
                     + ", on line: " + v.lineNo);
@@ -291,6 +315,12 @@ public class SemanticAnalyser implements Visitor {
         }
     }
 
+    /**
+     * [getIdentfierType searches for the identifer in current scope and scopes
+     * above it and sets the expression type to the type of the identifier found]
+     *
+     * @param int lineNo [lineNo the lineNo the identifier was referred to at]
+     */
     private void getIdentfierType(String id, int lineNo) {
         Stack<Scope> tempStack = (Stack<Scope>) scopes.clone();
 
@@ -320,6 +350,8 @@ public class SemanticAnalyser implements Visitor {
         v.rightSide.accept(this);
         rightSideType = expressionType;
 
+        // check that left side and right side match and that the operator works with
+        // the expression types
         if (leftSideType != rightSideType) {
             System.out.println("Mismatched types in expression at line: " + v.lineNo + ". Cannot perform operation on: "
                     + leftSideType + " and " + rightSideType);
@@ -356,12 +388,13 @@ public class SemanticAnalyser implements Visitor {
             paramTypes.add(expressionType);
         }
 
+        // search for the function called
         Stack<Scope> tempStack = (Stack<Scope>) scopes.clone();
         boolean found = false;
 
         while (!tempStack.isEmpty()) {
             Scope scope = tempStack.pop();
-            if (scope.lookupFunc(new Pair<>(id, paramTypes))) {
+            if (scope.lookup(new Pair<>(id, paramTypes))) {
                 expressionType = scope.funcBindings.get(new Pair<>(id, paramTypes));
                 currentScope = scope;
                 found = true;
@@ -369,6 +402,7 @@ public class SemanticAnalyser implements Visitor {
             }
         }
 
+        // if the function wasn't found raise an error
         if (!found) {
             System.out.print("No function with identifer: " + id + " and param types: ");
             for (AstNode.varType type : paramTypes) {
@@ -401,22 +435,29 @@ public class SemanticAnalyser implements Visitor {
 }
 
 class Scope {
+    // stores variable ids and types
     HashMap<String, AstNode.varType> varBindings = new HashMap<>();
+
+    // stores function ids, param types and return types
     HashMap<Pair<String, ArrayList<AstNode.varType>>, AstNode.varType> funcBindings = new HashMap<>();
 
+    // lookup variable
     boolean lookup(String id) {
         return varBindings.containsKey(id);
     }
 
+    // insert variable
     void insert(String id, AstNode.varType type) {
         varBindings.put(id, type);
     }
 
+    // insert function
     void insert(Pair<String, ArrayList<AstNode.varType>> signature, AstNode.varType returnType) {
         funcBindings.put(signature, returnType);
     }
 
-    boolean lookupFunc(Pair<String, ArrayList<AstNode.varType>> signature) {
+    // lookup function
+    boolean lookup(Pair<String, ArrayList<AstNode.varType>> signature) {
         return funcBindings.containsKey(signature);
     }
 }

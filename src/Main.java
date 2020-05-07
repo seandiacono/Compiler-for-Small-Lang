@@ -1,27 +1,27 @@
 import Parser.AstNodes.AstProgramNode;
 import Parser.Parser;
 import Lexer.*;
-import Visitor.Interpreter;
+import Visitor.InterpreterVisitor;
 import Visitor.SemanticAnalyser;
-//import Visitor.XmlVisitor;
+import Visitor.XmlVisitor;
 
 public class Main {
     public static void main(String args[]) {
         Parser parser = new Parser();
-        // XmlVisitor xmlVisitor = new XmlVisitor();
+        XmlVisitor xmlVisitor = new XmlVisitor();
         SemanticAnalyser semanticAnalyser = new SemanticAnalyser();
-        Interpreter interpreter = new Interpreter();
+        InterpreterVisitor interpreter = new InterpreterVisitor();
 
         Lexer.readInput("C:/Users/seand/Documents/University/Compiler Theory/Compiler-for-Small-Lang/test.txt");
         AstProgramNode program = parser.parse();
-        // for (AstNode statement : program.statements) {
-        // System.out.println(statement.toString());
-        // }
 
-        // program.accept(xmlVisitor);
+        // produce xml ast
+        program.accept(xmlVisitor);
 
+        // check semantics
         program.accept(semanticAnalyser);
 
+        // interpret program
         program.accept(interpreter);
     }
 }

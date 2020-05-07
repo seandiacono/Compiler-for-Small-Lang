@@ -8,19 +8,19 @@ import Parser.AstNodes.*;
 import Parser.AstNodes.AstNode.varType;
 import javafx.util.Pair;
 
-public class Interpreter implements Visitor {
-    private Stack<SymbolTable> scopes = new Stack<>();
-    private SymbolTable currentScope = new SymbolTable();
+public class InterpreterVisitor implements Visitor {
+    private Stack<ScopeInterpreter> scopes = new Stack<>();
+    private ScopeInterpreter currentScope = new ScopeInterpreter();
     private VarTypeVal expresssionValue;
     private boolean ignoreBlockPush = false;
     private boolean ignoreBlockPop = false;
 
-    public Interpreter() {
+    public InterpreterVisitor() {
         initialScope();
     }
 
     private void push() {
-        scopes.push(new SymbolTable());
+        scopes.push(new ScopeInterpreter());
     }
 
     private void pop() {
@@ -58,6 +58,7 @@ public class Interpreter implements Visitor {
         for (AstStatementNode statement : v.statements) {
             statement.accept(this);
         }
+        // ignore block pop if the pop will take place outside the block visit method
         if (!ignoreBlockPop) {
             pop();
         } else {
@@ -73,6 +74,7 @@ public class Interpreter implements Visitor {
         }
 
         boolean condition;
+        // do until the condition is false
         do {
             v.expr.accept(this);
             condition = (boolean) expresssionValue.value;
@@ -96,6 +98,7 @@ public class Interpreter implements Visitor {
     @Override
     public void visit(AstWhileNode v) {
         boolean condition;
+        // do while condition is true
         do {
             v.expr.accept(this);
             condition = (boolean) expresssionValue.value;
@@ -124,11 +127,11 @@ public class Interpreter implements Visitor {
 
     @Override
     public void visit(AstVarDeclNode v) {
-        currentScope = scopes.peek();
+        ScopeInterpreter varScope = scopes.peek();
         String id = v.identifier.identifier;
 
         v.expr.accept(this);
-        currentScope.insert(id, expresssionValue);
+        varScope.insert(id, expresssionValue);
     }
 
     @Override
@@ -152,17 +155,18 @@ public class Interpreter implements Visitor {
 
     @Override
     public void visit(AstAssignNode v) {
-        currentScope = scopes.peek();
-        String id = v.identifier.identifier;
+        v.identifier.accept(this);
+        ScopeInterpreter identifierScope = currentScope;
 
         v.expr.accept(this);
 
-        currentScope.varBindings.put(id, expresssionValue);
+        identifierScope.varBindings.put(v.identifier.identifier, expresssionValue);
     }
 
     @Override
     public void visit(AstUnaryNode v) {
         v.expr.accept(this);
+        // perform unary operation
         switch (v.op) {
             case "-":
                 if (expresssionValue.type == varType.INT) {
@@ -177,20 +181,26 @@ public class Interpreter implements Visitor {
         }
     }
 
-    private void getIdentfierValue(String id, int lineNo) {
-        Stack<SymbolTable> tempStack = (Stack<SymbolTable>) scopes.clone();
+    /**
+     * [getIdentfierValue searches for the identifier in the current scope and
+     * scopes above it and sets the expression value to the value of the identifier]
+     */
+    private void getIdentfierValue(String id) {
+        Stack<ScopeInterpreter> tempStack = (Stack<ScopeInterpreter>) scopes.clone();
 
         while (!tempStack.isEmpty()) {
-            SymbolTable scope = tempStack.pop();
+            ScopeInterpreter scope = tempStack.pop();
             expresssionValue = scope.varBindings.get(id);
             currentScope = scope;
-            return;
+            if (expresssionValue != null) {
+                return;
+            }
         }
     }
 
     @Override
     public void visit(AstIdentifierNode v) {
-        getIdentfierValue(v.identifier, v.lineNo);
+        getIdentfierValue(v.identifier);
     }
 
     @Override
@@ -202,9 +212,10 @@ public class Interpreter implements Visitor {
         v.rightSide.accept(this);
         rightSideValue = expresssionValue;
         boolean operationValRel;
-
+        // performs the correct operation based on the value of the operator
         switch (v.op) {
             case "+":
+                // casts the value to the correct type
                 if (leftSideValue.type == varType.INT) {
                     int operationVal = (int) leftSideValue.value + (int) rightSideValue.value;
                     expresssionValue = new VarTypeVal<Integer>(varType.INT, operationVal);
@@ -312,10 +323,16 @@ public class Interpreter implements Visitor {
             paramTypes.add(expresssionValue.type);
         }
 
-        currentScope = scopes.peek();
-
-        AstFuncDeclNode function = currentScope.funcBindings
-                .get(new Pair<String, ArrayList<AstNode.varType>>(id, paramTypes));
+        // search for function and store it when found
+        Stack<ScopeInterpreter> tempStack = (Stack<ScopeInterpreter>) scopes.clone();
+        AstFuncDeclNode function = null;
+        while (!tempStack.isEmpty()) {
+            ScopeInterpreter scope = tempStack.pop();
+            function = scope.funcBindings.get(new Pair<>(id, paramTypes));
+            if (function != null) {
+                break;
+            }
+        }
 
         push();
         currentScope = scopes.peek();
@@ -347,6 +364,7 @@ public class Interpreter implements Visitor {
     }
 }
 
+// class to store the variable type and value
 class VarTypeVal<T> {
     AstNode.varType type;
     T value;
@@ -357,8 +375,9 @@ class VarTypeVal<T> {
     }
 }
 
-class SymbolTable {
+class ScopeInterpreter {
     HashMap<String, VarTypeVal> varBindings = new HashMap<>();
+    
     HashMap<Pair<String, ArrayList<AstNode.varType>>, AstFuncDeclNode> funcBindings = new HashMap<>();
 
     void insert(String id, VarTypeVal value) {

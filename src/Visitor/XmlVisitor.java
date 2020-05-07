@@ -6,18 +6,27 @@ public class XmlVisitor implements Visitor {
 
     int indentLevel = 0;
 
-    void incrementIndent(){
+    /**
+     * [incrementIndent adds a new indent level and prints them]
+     */
+    void incrementIndent() {
         indentLevel++;
         printIndents();
     }
 
-    void decrementIndent(){
+    /**
+     * [decrementIndent decreases an indent level and prints them]
+     */
+    void decrementIndent() {
         indentLevel--;
         printIndents();
     }
 
-    void printIndents(){
-        for(int i=0; i<indentLevel; i++){
+    /**
+     * [printIndents prints the indents depending on the indent level]
+     */
+    void printIndents() {
+        for (int i = 0; i < indentLevel; i++) {
             System.out.print("\t");
         }
     }
@@ -26,7 +35,7 @@ public class XmlVisitor implements Visitor {
     public void visit(AstProgramNode v) {
         System.out.println("<Program>");
         indentLevel++;
-        for (AstStatementNode statement: v.statements) {
+        for (AstStatementNode statement : v.statements) {
             printIndents();
             statement.accept(this);
         }
@@ -48,7 +57,7 @@ public class XmlVisitor implements Visitor {
     public void visit(AstBlockNode v) {
         System.out.println("<Block>");
         indentLevel++;
-        for (AstStatementNode statement: v.statements) {
+        for (AstStatementNode statement : v.statements) {
             printIndents();
             statement.accept(this);
         }
@@ -61,7 +70,7 @@ public class XmlVisitor implements Visitor {
         System.out.println("<For>");
         incrementIndent();
 
-        if(v.varDecl != null){
+        if (v.varDecl != null) {
             v.varDecl.accept(this);
         }
 
@@ -69,7 +78,7 @@ public class XmlVisitor implements Visitor {
         v.expr.accept(this);
 
         printIndents();
-        if(v.assignNode != null){
+        if (v.assignNode != null) {
             v.assignNode.accept(this);
         }
 
@@ -97,9 +106,11 @@ public class XmlVisitor implements Visitor {
         incrementIndent();
 
         System.out.println("<Condition>");
+
         incrementIndent();
         v.expr.accept(this);
         decrementIndent();
+
         System.out.println("</Condition>");
 
         printIndents();
@@ -111,7 +122,7 @@ public class XmlVisitor implements Visitor {
 
     @Override
     public void visit(AstFormalParamNode v) {
-        System.out.println("<FormalParam Type=\"" + v.type+ ">");
+        System.out.println("<FormalParam Type=\"" + v.type + ">");
         incrementIndent();
 
         v.identifier.accept(this);
@@ -122,7 +133,7 @@ public class XmlVisitor implements Visitor {
 
     @Override
     public void visit(AstFuncDeclNode v) {
-        System.out.println("<FuncDecl ReturnType=\""+ v.returnType+ "\">");
+        System.out.println("<FuncDecl ReturnType=\"" + v.returnType + "\">");
         incrementIndent();
 
         v.identifier.accept(this);
@@ -130,7 +141,7 @@ public class XmlVisitor implements Visitor {
         printIndents();
         System.out.println("<FormalParams>");
         indentLevel++;
-        for(AstFormalParamNode param: v.params){
+        for (AstFormalParamNode param : v.params) {
             printIndents();
             param.accept(this);
         }
@@ -145,7 +156,7 @@ public class XmlVisitor implements Visitor {
     }
 
     @Override
-    public void visit(AstFloatLiteralNode v){
+    public void visit(AstFloatLiteralNode v) {
         System.out.println("<FloatLiteral>" + v.val + "</FloatLiteral>");
     }
 
@@ -163,7 +174,7 @@ public class XmlVisitor implements Visitor {
     public void visit(AstVarDeclNode v) {
         System.out.println("<VarDecl>");
         incrementIndent();
-        System.out.println("<Var Type=\"" +v.type+ "\">");
+        System.out.println("<Var Type=\"" + v.type + "\">");
         incrementIndent();
         v.identifier.accept(this);
         decrementIndent();
@@ -173,7 +184,6 @@ public class XmlVisitor implements Visitor {
         decrementIndent();
         System.out.println("</VarDecl>");
     }
-
 
     @Override
     public void visit(AstAssignNode v) {
@@ -203,7 +213,7 @@ public class XmlVisitor implements Visitor {
         decrementIndent();
         System.out.println("</IfBlock>");
 
-        if(v.elseBlock != null){
+        if (v.elseBlock != null) {
             printIndents();
             System.out.println("<ElseBlock>");
             incrementIndent();
@@ -238,12 +248,12 @@ public class XmlVisitor implements Visitor {
 
     @Override
     public void visit(AstIdentifierNode v) {
-        System.out.println("<Id>"+v.identifier +"</Id>");
+        System.out.println("<Id>" + v.identifier + "</Id>");
     }
 
     @Override
     public void visit(AstSumBoolExprNode v) {
-        System.out.println("<BinExpr Op=\""+v.op+"\">");
+        System.out.println("<BinExpr Op=\"" + v.op + "\">");
         incrementIndent();
         v.leftSide.accept(this);
         printIndents();
@@ -262,7 +272,7 @@ public class XmlVisitor implements Visitor {
         printIndents();
         System.out.println("<ActualParams>");
         indentLevel++;
-        for(AstActualParam param: v.params){
+        for (AstActualParam param : v.params) {
             printIndents();
             param.accept(this);
         }

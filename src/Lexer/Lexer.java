@@ -8,14 +8,16 @@ import Lexer.Token.tokenIdentifier;
 
 import java.io.File;
 
-// this is a test commit
-
 public class Lexer {
+    // list of characters in the program
     private static ArrayList<Character> inputChar = new ArrayList<>();
 
+    // character counter
     private static int charCounter = 0;
+    // line number counter
     private static int lineCounter = 1;
 
+    // state transition table
     private static int[][] transitionTable = { { 1, 2, -1, 5, 6, 7, 10, 11, 17, -1, -1 },
             { 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1 },
             { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -27,10 +29,16 @@ public class Lexer {
             { 14, 14, 14, 15, 14, 14, 14, 16, 14, 14, 14 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, };
 
+    // set of keywords in small lang
     private static Set<String> keywords = new HashSet<>(Arrays.asList("float", "int", "bool", "auto", "true", "false",
             "and", "or", "not", "let", "print", "return", "if", "else", "for", "while", "ff"));
+    // list of end states
     private static Set<Integer> finalStates = new HashSet<>(Arrays.asList(1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 17));
 
+    /**
+     * [readInput reads the content of a text file and adds all the characters to
+     * the char array]
+     */
     public static void readInput(String filename) {
         try {
             File f = new File(filename);
@@ -48,31 +56,37 @@ public class Lexer {
         }
     }
 
-    private static Token getNextLexeme() {
+    /**
+     * [tokenize goes through the char array and returns the next token found]
+     * 
+     * @return Token [this is the token found during tokenization]
+     */
+    private static Token tokenize() {
         int currentState = 0;
 
         String lexeme = "";
 
         Stack<Integer> visitedStates = new Stack<>();
 
-        // bad state
         visitedStates.push(-1);
 
         char currentChar;
-
+        // ignore all trailing white spaces
         while (charCounter < inputChar.size()
                 && (inputChar.get(charCounter) == ' ' || inputChar.get(charCounter) == '\t')) {
             charCounter++;
         }
 
+        // do until an erro state is reached or until the whole program has been read
         do {
             currentChar = inputChar.get(charCounter);
             charCounter++;
 
+            // ignore white spaces and count new lines.
+            // TODO: fix inline comment on last line bug
             if (currentChar == 32 && (currentState != 14 && currentState != 15 && currentState != 12)) {
                 break;
             } else if ((currentChar == '\n' || currentChar == 13) && currentState != 12) {
-                charCounter++;
                 lineCounter++;
                 continue;
             } else if ((currentChar == '\n' || currentChar == 13)) {
@@ -84,17 +98,21 @@ public class Lexer {
             lexeme = lexeme + currentChar;
             currentState = getState(currentState, currentChar);
 
+            // empty visited states stack if the current state is a final state
             if (finalStates.contains(currentState)) {
                 while (!visitedStates.empty()) {
                     visitedStates.pop();
                 }
             }
-
+            // push current state to the stack
             visitedStates.push(currentState);
         } while (currentState != -1 && charCounter < inputChar.size());
 
+        // rollback loop until a final state is reached or until the visited states
+        // stack is empty
         while (!finalStates.contains(currentState) && !visitedStates.empty()) {
             visitedStates.pop();
+            // truncate lexeme
             try {
                 lexeme = lexeme.substring(0, lexeme.length() - 1);
             } catch (StringIndexOutOfBoundsException e) {
@@ -107,12 +125,14 @@ public class Lexer {
             }
         }
 
+        // return correct token
         if (finalStates.contains(currentState)) {
             Token token = new Token();
             token.lexeme = lexeme;
             switch (currentState) {
                 case 1:
-
+                    // if the lexem is a keyword return the associated token or else return the
+                    // identifier token
                     if (keywords.contains(lexeme)) {
                         switch (lexeme) {
                             case "and":
@@ -234,12 +254,19 @@ public class Lexer {
         return null;
     }
 
+    /**
+     * [getNextToken is used by the parser to return the sequence of all the tokens
+     * in the program]
+     * 
+     * @return ArrayList<Token> [this is the sequence of all the tokens in the
+     *         program]
+     */
     public static ArrayList<Token> getNextToken() {
         ArrayList<Token> tokens = new ArrayList<>();
         while (true) {
             Token token;
             try {
-                token = getNextLexeme();
+                token = tokenize();
                 if (token.tokenIdentifier != tokenIdentifier.TOK_COMMENT) {
                     tokens.add(token);
                 }
@@ -253,10 +280,27 @@ public class Lexer {
         return tokens;
     }
 
+    /**
+     * [getState takes a state and character and returns the next state]
+     *
+     * @param int  currentState [currentState is the state the lexer is currently
+     *             at]
+     * @param char currentChar [currentChar is the new character read by the lexer]
+     *
+     * @return int [returns the state from the state transition table]
+     */
     private static int getState(int currentState, char currentChar) {
         return transitionTable[currentState][charToIndex(currentChar)];
     }
 
+    /**
+     * [charToIndex takes a character and returns the column index of that character
+     * in the transition table]
+     *
+     * @param char currentChar [currentChar is the new character read by the lexer]
+     *
+     * @return int [returns the column index in the transition table]
+     */
     private static int charToIndex(char currentChar) {
         if (Character.isDigit(currentChar))
             return 1;
@@ -279,7 +323,7 @@ public class Lexer {
             return 8;
         else if (currentChar == '\n' || currentChar == 13)
             return 10;
-        else if (currentChar > 32 && currentChar < 126)
+        else if (currentChar > 32 && currentChar < 126) // all printable ASCII characters
             return 9;
         else
             return -1;
