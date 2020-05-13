@@ -1,15 +1,1 @@
-ff square(x:int):int{
-		return x*x;
-}
-
-ff add(x:int) :  int {
-
-	let x_orig:auto = x;
-	while(x < square(x_orig)){
-		x = x + x;
-	}
-	
-	return x;
-}
-
-print add(10);
+let test:char = '!';
