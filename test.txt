@@ -1,22 +1,15 @@
-ff Square(x:float):float{
-    return x*x;
+ff square(x:int):int{
+		return x*x;
 }
 
-ff XGreaterThanY(x:float,y:float):auto{
-    let ans:bool = true;
-    if(y>x){ ans = false; }
-    return ans;
+ff add(x:int) :  int {
+
+	let x_orig:auto = x;
+	while(x < square(x_orig)){
+		x = x + x;
+	}
+	
+	return x;
 }
 
-ff AverageOfThree(x:float, y:float, z:float):float{
-    let total:float = x + y + z;
-    return total/3.0;
-}
-
-let x:float = 2.4;
-let y:auto = Square(2.5);
-print y;                            //6.25
-print XGreaterThanY(x,2.3);         //true
-print XGreaterThanY(Square(1.5), y); //false
-print AverageOfThree(x,y,1.2);      //3.28
-
+print add(10);
