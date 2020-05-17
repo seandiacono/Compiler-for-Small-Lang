@@ -19,7 +19,7 @@ public class Main {
         Lexer.readInput("C:/Users/seand/OneDrive/Documents/University/Compiler Theory/Compiler-for-Small-Lang/test.txt");
         tokens = Lexer.getNextToken();
         for (Token token : tokens) {
-            System.out.println(token.tokenIdentifier);
+            System.out.println(token.lexeme+" : "+token.tokenIdentifier);
         }
         // AstProgramNode program = parser.parse();
 

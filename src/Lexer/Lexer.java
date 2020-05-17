@@ -18,24 +18,35 @@ public class Lexer {
     private static int lineCounter = 1;
 
     // state transition table
-    private static int[][] transitionTable = { { 1, 2, -1, 5, 6, 7, 10, 11, 17, -1, -1, 18 },
-            { 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-            { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-            { -1, -1, -1, -1, -1, 9, 8, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1 },
-            { -1, -1, -1, 14, -1, -1, -1, 12, -1, -1, -1, -1 }, { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, -1 },
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { 14, 14, 14, 15, 14, 14, 14, 14, 14, 14, 14, -1 },
-            { 14, 14, 14, 15, 14, 14, 14, 16, 14, 14, 14, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, { -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, -1, 19 },
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, };
+    private static int[][] transitionTable = { { 1, 2, -1, 5, 6, 7, 10, 11, 17, -1, -1, 18, 20, -1 },
+            { 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, 2, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, 9, 8, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, 14, -1, -1, -1, 12, -1, -1, -1, -1, -1, -1 },
+            { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { 14, 14, 14, 15, 14, 14, 14, 14, 14, 14, 14, -1, -1, -1 },
+            { 14, 14, 14, 15, 14, 14, 14, 16, 14, 14, 14, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, -1, 19, -1, -1 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+            { -1, 20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 21 },
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }, };
 
     // set of keywords in small lang
     private static Set<String> keywords = new HashSet<>(Arrays.asList("float", "int", "bool", "auto", "true", "false",
             "and", "or", "not", "let", "print", "return", "if", "else", "for", "while", "ff", "char"));
     // list of end states
     private static Set<Integer> finalStates = new HashSet<>(
-            Arrays.asList(1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 17, 19));
+            Arrays.asList(1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 16, 17, 19, 21));
 
     /**
      * [readInput reads the content of a text file and adds all the characters to
@@ -248,6 +259,9 @@ public class Lexer {
                 case 19:
                     token.tokenIdentifier = tokenIdentifier.TOK_CHAR;
                     break;
+                case 21:
+                    token.tokenIdentifier = tokenIdentifier.TOK_ARRSIZE;
+                    break;
                 default:
                     token.tokenIdentifier = tokenIdentifier.TOK_ERROR;
                     break;
@@ -298,7 +312,7 @@ public class Lexer {
      * @return int [returns the state from the state transition table]
      */
     private static int getState(int currentState, char currentChar) {
-        return transitionTable[currentState][charToIndex(currentState ,currentChar)];
+        return transitionTable[currentState][charToIndex(currentState, currentChar)];
     }
 
     /**
@@ -309,16 +323,15 @@ public class Lexer {
      *
      * @return int [returns the column index in the transition table]
      */
-    private static int charToIndex(int currentState,char currentChar) {
+    private static int charToIndex(int currentState, char currentChar) {
         if (Character.isDigit(currentChar))
             return 1;
-        else if (Character.isLetter(currentChar) || currentChar == '_'){
-            if (currentState == 18){
+        else if (Character.isLetter(currentChar) || currentChar == '_') {
+            if (currentState == 18) {
                 return 9;
             }
             return 0;
-        }
-        else if (currentChar == '.')
+        } else if (currentChar == '.')
             return 2;
         else if (currentChar == '*')
             return 3;
@@ -333,9 +346,13 @@ public class Lexer {
         else if (currentChar == '(' || currentChar == ')' || currentChar == ':' || currentChar == ','
                 || currentChar == ';' || currentChar == '{' || currentChar == '}')
             return 8;
-        else if (currentChar == '\'') {
+        else if (currentChar == '\'')
             return 11;
-        } else if (currentChar == '\n' || currentChar == 13)
+        else if (currentChar == '[')
+            return 12;
+        else if (currentChar == ']')
+            return 13;
+        else if (currentChar == '\n' || currentChar == 13)
             return 10;
         else if (currentChar > 32 && currentChar < 126) {
             // all printable ASCII characters

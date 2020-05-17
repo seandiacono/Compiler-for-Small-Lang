@@ -1,1 +1,1 @@
-let test:char = '!';
+let test[2]:char = {1,2};
