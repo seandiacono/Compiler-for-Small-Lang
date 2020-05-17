@@ -8,6 +8,10 @@ public class AstVarDeclNode extends AstStatementNode {
     public varType type;
     public AstExpressionNode expr;
 
+    public AstVarDeclNode(){
+        
+    }
+
     public AstVarDeclNode(AstIdentifierNode identifierIn, int lineNoIn, varType typeIn, AstExpressionNode exprIn){
         identifier = identifierIn;
         lineNo = lineNoIn;
