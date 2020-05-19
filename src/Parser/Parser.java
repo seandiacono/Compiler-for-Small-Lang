@@ -1,8 +1,6 @@
 package Parser;
 
 import Parser.AstNodes.*;
-import Parser.AstNodes.AstNode.varType;
-import jdk.internal.cmm.SystemResourcePressureImpl;
 import Lexer.*;
 import Lexer.Token.tokenIdentifier;
 
@@ -94,25 +92,10 @@ public class Parser {
             System.exit(1);
         }
 
-        AstIdentifierNode identifier;
+        AstIdentifierNode identifier = parseIdentifier();
         boolean isArray = false;
-
-        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_ARRSIZE) {
-            String ident = currentToken.lexeme;
-            int lineNo = currentToken.lineNumber;
-
-            changeCurrentToken();
-
-            String arraySize = currentToken.lexeme.replace("[", "");
-            arraySize = arraySize.replace("]", "");
-
-            int arrSize = Integer.parseInt(arraySize);
-
-            identifier = new AstArrayIdentifierNode(ident, lineNo, arrSize);
+        if (identifier.getClass() == AstArrayIdentifierNode.class) {
             isArray = true;
-        } else {
-            // create identifier node
-            identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
         }
 
         changeCurrentToken();
@@ -135,12 +118,6 @@ public class Parser {
 
             AstExpressionNode expr = parseExpr();
 
-            if (isArray && expr.getClass() != AstArrayNode.class) {
-                System.out.println("Expression of array decleration does not match array format, at line: "
-                        + currentToken.lineNumber);
-                System.exit(1);
-            }
-
             checkForSemicolon();
             // return a new variable decleration node
             return new AstVarDeclNode(identifier, currentToken.lineNumber, type, expr);
@@ -155,7 +132,7 @@ public class Parser {
 
     // 〈Assignment〉 ::= 〈Identifier 〉 ‘=’ 〈Expression〉
     private AstAssignNode parseAssignment(boolean forLoop) {
-        AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
+        AstIdentifierNode identifier = parseIdentifier();
 
         changeCurrentToken();
         if (currentToken.tokenIdentifier != tokenIdentifier.TOK_EQUALS) {
@@ -409,7 +386,7 @@ public class Parser {
                     + currentToken.lineNumber);
             System.exit(1);
         }
-        AstIdentifierNode identifier = new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
+        AstIdentifierNode identifier = parseIdentifier();
 
         changeCurrentToken();
         if (currentToken.tokenIdentifier != tokenIdentifier.TOK_COLON) {
@@ -538,11 +515,14 @@ public class Parser {
                 return new AstIntegerLiteralNode(Integer.parseInt(currentToken.lexeme), currentToken.lineNumber);
             case TOK_BOOLEAN:
                 return new AstBoolLiteralNode(Boolean.parseBoolean(currentToken.lexeme), currentToken.lineNumber);
+            case TOK_CHAR:
+                char c = currentToken.lexeme.charAt(1);
+                return new AstCharLiteralNode(c, currentToken.lineNumber);
             case TOK_IDENTIFIER:
                 if (nextToken.tokenIdentifier == tokenIdentifier.TOK_LEFTBRACKET) {
                     return parseFuncCall();
                 }
-                return new AstIdentifierNode(currentToken.lexeme, currentToken.lineNumber);
+                return parseIdentifier();
             case TOK_LEFTBRACKET:
                 AstExpressionNode expr = parseExpr();
                 changeCurrentToken();
@@ -584,5 +564,30 @@ public class Parser {
         }
 
         return new AstArrayNode(values, currentToken.lineNumber);
+    }
+
+    private AstIdentifierNode parseIdentifier() {
+        String id = currentToken.lexeme;
+        int lineNo = currentToken.lineNumber;
+
+        if (nextToken.tokenIdentifier == tokenIdentifier.TOK_LEFTSQUARE) {
+            changeCurrentToken();
+
+            AstExpressionNode arrIndex = null;
+            if(nextToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTSQUARE){
+                arrIndex = parseExpr();
+            }
+
+            changeCurrentToken();
+            if (currentToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTSQUARE) {
+                System.out.println(
+                        "Expected ']' but got: " + currentToken.lexeme + " at line: " + currentToken.lineNumber);
+                System.exit(1);
+            }
+
+            return new AstArrayIdentifierNode(id, lineNo, arrIndex);
+        }
+
+        return new AstIdentifierNode(id, lineNo);
     }
 }

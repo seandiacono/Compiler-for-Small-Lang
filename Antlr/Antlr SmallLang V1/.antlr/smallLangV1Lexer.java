@@ -1,4 +1,4 @@
-// Generated from c:\Users\seand\OneDrive\Documents\University\Compiler Theory\Compiler-for-Small-Lang\src\Antlr\Antlr Test\smallLangV1.g4 by ANTLR 4.7.1
+// Generated from c:\Users\seand\OneDrive\Documents\University\Compiler Theory\Compiler-for-Small-Lang\src\Antlr\Antlr SmallLang V1\smallLangV1.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

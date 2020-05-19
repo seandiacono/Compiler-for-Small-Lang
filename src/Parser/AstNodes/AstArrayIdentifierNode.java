@@ -3,11 +3,11 @@ package Parser.AstNodes;
 import Visitor.Visitor;
 
 public class AstArrayIdentifierNode extends AstIdentifierNode{
-    int arrSize;
+    AstExpressionNode arrIndex;
 
-    public AstArrayIdentifierNode(String identifier, int lineNo,int arrSize) {
+    public AstArrayIdentifierNode(String identifier, int lineNo,AstExpressionNode arrIndex) {
         super(identifier, lineNo);
-        this.arrSize = arrSize;
+        this.arrIndex = arrIndex;
     }
     
     public void accept(Visitor v){
