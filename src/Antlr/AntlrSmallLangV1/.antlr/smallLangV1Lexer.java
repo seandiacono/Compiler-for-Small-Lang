@@ -1,4 +1,4 @@
-// Generated from c:\Users\seand\OneDrive\Documents\University\Compiler Theory\Compiler-for-Small-Lang\src\Antlr\Antlr SmallLang V1\smallLangV1.g4 by ANTLR 4.7.1
+// Generated from c:\Users\seand\OneDrive\Documents\University\Compiler Theory\Compiler-for-Small-Lang\src\Antlr\AntlrSmallLangV1\SmallLangV1.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class smallLangV1Lexer extends Lexer {
+public class SmallLangV1Lexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -84,13 +84,13 @@ public class smallLangV1Lexer extends Lexer {
 	}
 
 
-	public smallLangV1Lexer(CharStream input) {
+	public SmallLangV1Lexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "smallLangV1.g4"; }
+	public String getGrammarFileName() { return "SmallLangV1.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

@@ -45,7 +45,6 @@ public class XmlVisitor implements Visitor {
 
     @Override
     public void visit(AstStatementNode v) {
-
     }
 
     @Override

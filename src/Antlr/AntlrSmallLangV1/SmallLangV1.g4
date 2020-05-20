@@ -1,4 +1,4 @@
-grammar smallLangV1;
+grammar SmallLangV1;
 prog: statement+;
 statement:
 	variabledecl ';' (NEWLINE)?
@@ -52,7 +52,9 @@ actualParam: expr (',')?;
 
 subExpr: '(' expr ')';
 
-unary: ('-' | 'not') expr;
+unary: unaryOp expr;
+
+unaryOp: ('-' | 'not');
 
 type: 'int' | 'bool' | 'float';
 auto: 'auto';
