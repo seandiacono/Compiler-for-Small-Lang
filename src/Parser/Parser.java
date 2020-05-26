@@ -111,8 +111,8 @@ public class Parser {
 
         // check for equals
         if (nextToken.tokenIdentifier != tokenIdentifier.TOK_EQUALS && !isArray) {
-            System.out.println(
-                    "Expected '=', but got: '" + currentToken.lexeme + "' at line: " + currentToken.lineNumber);
+            System.out.println("Expected '=', but got: '" + nextToken.lexeme + "' at line: " + currentToken.lineNumber);
+            System.exit(1);
         } else if (nextToken.tokenIdentifier == tokenIdentifier.TOK_EQUALS) {
             changeCurrentToken();
 
@@ -504,7 +504,7 @@ public class Parser {
 
     /*
      * 〈Factor 〉 ::= 〈Literal〉 | 〈Identifier 〉 | 〈FunctionCall〉 | 〈SubExpression〉 |
-     * 〈Unary〉
+     * 〈Unary〉|〈Array〉
      */
     private AstExpressionNode parseFactor() {
         changeCurrentToken();
@@ -547,6 +547,7 @@ public class Parser {
         return null;
     }
 
+    // 〈Array〉 ∶≔ '{' {Expression} '}'
     private AstArrayNode parseArray() {
         ArrayList<AstExpressionNode> values = new ArrayList<>();
 
@@ -566,6 +567,7 @@ public class Parser {
         return new AstArrayNode(values, currentToken.lineNumber);
     }
 
+    // 〈Identifier〉 ∷= ( ‘ ’ │〈Letter 〉) { ‘ ’ |〈Letter 〉|〈Digit〉} [〈ArraySize〉]
     private AstIdentifierNode parseIdentifier() {
         String id = currentToken.lexeme;
         int lineNo = currentToken.lineNumber;
@@ -574,7 +576,7 @@ public class Parser {
             changeCurrentToken();
 
             AstExpressionNode arrIndex = null;
-            if(nextToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTSQUARE){
+            if (nextToken.tokenIdentifier != tokenIdentifier.TOK_RIGHTSQUARE) {
                 arrIndex = parseExpr();
             }
 

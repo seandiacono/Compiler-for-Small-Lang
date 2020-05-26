@@ -18,7 +18,7 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
 
     public AstStatementNode visitStatement(SmallLangV1Parser.StatementContext ctx) {
         if (ctx.variabledecl() != null) {
-            return visitVarDeclNode(ctx.variabledecl());
+            return visitVarDecl(ctx.variabledecl());
         } else if (ctx.assignment() != null) {
             return visitAssignment(ctx.assignment());
         } else if (ctx.printStat() != null) {
@@ -49,6 +49,7 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
         }
 
         String type;
+        // check if type is auto
         if (ctx.type() != null) {
             type = ctx.type().getText();
         } else {
@@ -92,7 +93,7 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
         AstAssignNode assignNode = null;
 
         if (ctx.variabledecl() != null) {
-            varDecl = visitVarDeclNode(ctx.variabledecl());
+            varDecl = visitVarDecl(ctx.variabledecl());
         }
 
         AstExpressionNode expr = visitExpr(ctx.expr());
@@ -122,6 +123,7 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
         AstBlockNode ifBlock = null;
         AstBlockNode elseBlock = null;
 
+        // check if if statment has an else block
         if (ctx.block().size() > 1) {
             ifBlock = visitBlock(ctx.block().get(0));
             elseBlock = visitBlock(ctx.block().get(1));
@@ -147,10 +149,11 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
         return new AstAssignNode(id, expr, lineNo);
     }
 
-    public AstVarDeclNode visitVarDeclNode(SmallLangV1Parser.VariabledeclContext ctx) {
+    public AstVarDeclNode visitVarDecl(SmallLangV1Parser.VariabledeclContext ctx) {
         String id = ctx.ID().getText();
         int lineNo = ctx.start.getLine();
         String type;
+        // check if type is auto
         if (ctx.type() != null) {
             type = ctx.type().getText();
         } else {
@@ -164,6 +167,7 @@ public class HybridParserVisitor extends SmallLangV1BaseVisitor<AstNode> {
         return new AstVarDeclNode(new AstIdentifierNode(id, lineNo), lineNo, vType, expr);
     }
 
+    //convert string type into AstNode varType
     public AstNode.varType visitType(String type) {
         switch (type) {
             case "int":

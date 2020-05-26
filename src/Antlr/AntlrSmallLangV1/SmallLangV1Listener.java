@@ -1,4 +1,4 @@
-// Generated from SmallLangV1.g4 by ANTLR 4.8
+package Antlr.AntlrSmallLangV1;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

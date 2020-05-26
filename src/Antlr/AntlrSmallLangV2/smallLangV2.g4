@@ -10,8 +10,9 @@ statement:
 	| returnStat ';' (NEWLINE)?
 	| funcDecl (NEWLINE)?;
 
-variabledecl: 'let' ID ':' (type | auto) '=' expr
-            | 'let' ID arrSize ':' (type | auto) ('=' expr)?;
+variabledecl:
+	'let' ID ':' (type | auto) '=' expr
+	| 'let' ID arrSize ':' (type | auto) ('=' expr)?;
 
 assignment: identifier '=' expr;
 
@@ -41,7 +42,13 @@ simpleExpr: term (addOp term)?;
 
 term: factor (mulOp factor)?;
 
-factor: literal | identifier | funcCall | subExpr | unary | array;
+factor:
+	literal
+	| identifier
+	| funcCall
+	| subExpr
+	| unary
+	| array;
 
 literal: bool | INT | FLOAT | '\'' CHAR '\'';
 
@@ -51,11 +58,12 @@ actualParams: actualParam+;
 
 actualParam: expr (',')?;
 
+array: '{' actualParam+ '}';
+
 subExpr: '(' expr ')';
 
 unary: ('-' | 'not') expr;
 
-array: '{' actualParam+ '}';
 
 identifier: ID (arrSize)?;
 
@@ -73,5 +81,5 @@ NEWLINE: [\r\n]+;
 INT: [0-9]+;
 FLOAT: INT '.' INT;
 ID: [_a-zA-Z] | [_a-zA-Z0-9]+;
-CHAR: [a-zA-Z0-9];
+CHAR: [.];
 WS: [ \t\r\n]+ -> skip;

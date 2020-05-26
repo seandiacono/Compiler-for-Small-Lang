@@ -1,4 +1,4 @@
-// Generated from c:\Users\seand\OneDrive\Documents\University\Compiler Theory\Compiler-for-Small-Lang\src\Antlr\AntlrSmallLangV2\smallLangV2.g4 by ANTLR 4.7.1
+// Generated from smallLangV2.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class smallLangV2Parser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -31,27 +31,36 @@ public class smallLangV2Parser extends Parser {
 		RULE_actualParam = 20, RULE_array = 21, RULE_subExpr = 22, RULE_unary = 23, 
 		RULE_identifier = 24, RULE_arrSize = 25, RULE_type = 26, RULE_auto = 27, 
 		RULE_relOp = 28, RULE_addOp = 29, RULE_mulOp = 30, RULE_bool = 31;
-	public static final String[] ruleNames = {
-		"prog", "statement", "variabledecl", "assignment", "printStat", "ifStat", 
-		"forStat", "whileStat", "returnStat", "funcDecl", "formalParams", "formalParam", 
-		"block", "expr", "simpleExpr", "term", "factor", "literal", "funcCall", 
-		"actualParams", "actualParam", "array", "subExpr", "unary", "identifier", 
-		"arrSize", "type", "auto", "relOp", "addOp", "mulOp", "bool"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"prog", "statement", "variabledecl", "assignment", "printStat", "ifStat", 
+			"forStat", "whileStat", "returnStat", "funcDecl", "formalParams", "formalParam", 
+			"block", "expr", "simpleExpr", "term", "factor", "literal", "funcCall", 
+			"actualParams", "actualParam", "array", "subExpr", "unary", "identifier", 
+			"arrSize", "type", "auto", "relOp", "addOp", "mulOp", "bool"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'let'", "':'", "'='", "'print'", "'if'", "'('", "')'", "'else'", 
-		"'for'", "'while'", "'return'", "'ff'", "','", "'{'", "'}'", "'''", "'-'", 
-		"'not'", "'['", "']'", "'int'", "'bool'", "'float'", "'char'", "'auto'", 
-		"'<'", "'>'", "'=='", "'<>'", "'<='", "'>='", "'+'", "'or'", "'*'", "'/'", 
-		"'and'", "'true'", "'false'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, null, null, "NEWLINE", "INT", "FLOAT", "ID", "CHAR", "WS"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "';'", "'let'", "':'", "'='", "'print'", "'if'", "'('", "')'", 
+			"'else'", "'for'", "'while'", "'return'", "'ff'", "','", "'{'", "'}'", 
+			"'''", "'-'", "'not'", "'['", "']'", "'int'", "'bool'", "'float'", "'char'", 
+			"'auto'", "'<'", "'>'", "'=='", "'<>'", "'<='", "'>='", "'+'", "'or'", 
+			"'*'", "'/'", "'and'", "'true'", "'false'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, null, null, "NEWLINE", "INT", "FLOAT", "ID", "CHAR", "WS"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -101,6 +110,7 @@ public class smallLangV2Parser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class ProgContext extends ParserRuleContext {
 		public List<StatementContext> statement() {
 			return getRuleContexts(StatementContext.class);
@@ -112,6 +122,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_prog; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterProg(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitProg(this);
+		}
 	}
 
 	public final ProgContext prog() throws RecognitionException {
@@ -178,6 +196,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitStatement(this);
+		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -365,6 +391,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_variabledecl; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterVariabledecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitVariabledecl(this);
+		}
 	}
 
 	public final VariabledeclContext variabledecl() throws RecognitionException {
@@ -481,6 +515,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterAssignment(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitAssignment(this);
+		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -516,6 +558,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_printStat; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterPrintStat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitPrintStat(this);
+		}
 	}
 
 	public final PrintStatContext printStat() throws RecognitionException {
@@ -555,6 +605,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_ifStat; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterIfStat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitIfStat(this);
+		}
 	}
 
 	public final IfStatContext ifStat() throws RecognitionException {
@@ -616,6 +674,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_forStat; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterForStat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitForStat(this);
+		}
 	}
 
 	public final ForStatContext forStat() throws RecognitionException {
@@ -683,6 +749,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_whileStat; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterWhileStat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitWhileStat(this);
+		}
 	}
 
 	public final WhileStatContext whileStat() throws RecognitionException {
@@ -722,6 +796,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_returnStat; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterReturnStat(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitReturnStat(this);
+		}
 	}
 
 	public final ReturnStatContext returnStat() throws RecognitionException {
@@ -765,6 +847,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_funcDecl; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterFuncDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitFuncDecl(this);
+		}
 	}
 
 	public final FuncDeclContext funcDecl() throws RecognitionException {
@@ -841,6 +931,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_formalParams; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterFormalParams(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitFormalParams(this);
+		}
 	}
 
 	public final FormalParamsContext formalParams() throws RecognitionException {
@@ -888,6 +986,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_formalParam; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterFormalParam(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitFormalParam(this);
+		}
 	}
 
 	public final FormalParamContext formalParam() throws RecognitionException {
@@ -937,6 +1043,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_block; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterBlock(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitBlock(this);
+		}
 	}
 
 	public final BlockContext block() throws RecognitionException {
@@ -999,6 +1113,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitExpr(this);
+		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
@@ -1048,6 +1170,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_simpleExpr; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterSimpleExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitSimpleExpr(this);
+		}
 	}
 
 	public final SimpleExprContext simpleExpr() throws RecognitionException {
@@ -1097,6 +1227,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_term; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterTerm(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitTerm(this);
+		}
 	}
 
 	public final TermContext term() throws RecognitionException {
@@ -1155,6 +1293,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_factor; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterFactor(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitFactor(this);
+		}
 	}
 
 	public final FactorContext factor() throws RecognitionException {
@@ -1230,6 +1376,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_literal; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterLiteral(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitLiteral(this);
+		}
 	}
 
 	public final LiteralContext literal() throws RecognitionException {
@@ -1296,6 +1450,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_funcCall; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterFuncCall(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitFuncCall(this);
+		}
 	}
 
 	public final FuncCallContext funcCall() throws RecognitionException {
@@ -1345,6 +1507,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_actualParams; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterActualParams(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitActualParams(this);
+		}
 	}
 
 	public final ActualParamsContext actualParams() throws RecognitionException {
@@ -1389,6 +1559,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_actualParam; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterActualParam(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitActualParam(this);
+		}
 	}
 
 	public final ActualParamContext actualParam() throws RecognitionException {
@@ -1434,6 +1612,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_array; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterArray(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitArray(this);
+		}
 	}
 
 	public final ArrayContext array() throws RecognitionException {
@@ -1482,6 +1668,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_subExpr; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterSubExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitSubExpr(this);
+		}
 	}
 
 	public final SubExprContext subExpr() throws RecognitionException {
@@ -1517,6 +1711,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_unary; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterUnary(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitUnary(this);
+		}
 	}
 
 	public final UnaryContext unary() throws RecognitionException {
@@ -1560,6 +1762,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_identifier; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterIdentifier(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitIdentifier(this);
+		}
 	}
 
 	public final IdentifierContext identifier() throws RecognitionException {
@@ -1602,6 +1812,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrSize; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterArrSize(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitArrSize(this);
+		}
 	}
 
 	public final ArrSizeContext arrSize() throws RecognitionException {
@@ -1643,6 +1861,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterType(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitType(this);
+		}
 	}
 
 	public final TypeContext type() throws RecognitionException {
@@ -1680,6 +1906,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_auto; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterAuto(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitAuto(this);
+		}
 	}
 
 	public final AutoContext auto() throws RecognitionException {
@@ -1708,6 +1942,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_relOp; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterRelOp(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitRelOp(this);
+		}
 	}
 
 	public final RelOpContext relOp() throws RecognitionException {
@@ -1745,6 +1987,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_addOp; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterAddOp(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitAddOp(this);
+		}
 	}
 
 	public final AddOpContext addOp() throws RecognitionException {
@@ -1782,6 +2032,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_mulOp; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterMulOp(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitMulOp(this);
+		}
 	}
 
 	public final MulOpContext mulOp() throws RecognitionException {
@@ -1819,6 +2077,14 @@ public class smallLangV2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_bool; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).enterBool(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof smallLangV2Listener ) ((smallLangV2Listener)listener).exitBool(this);
+		}
 	}
 
 	public final BoolContext bool() throws RecognitionException {

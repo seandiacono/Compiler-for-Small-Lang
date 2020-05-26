@@ -2,7 +2,6 @@ import Parser.AstNodes.AstProgramNode;
 import Parser.Parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -20,14 +19,16 @@ public class Main {
         XmlVisitor xmlVisitor = new XmlVisitor();
         SemanticAnalyser semanticAnalyser = new SemanticAnalyser();
         InterpreterVisitor interpreter = new InterpreterVisitor();
-        ArrayList<Token> tokens = new ArrayList<>();
 
+        // * USING ANTLR
         try {
+            // use antlr's generated lexer and parser
             CharStream charStream = CharStreams.fromFileName(
                     "C:/Users/seand/OneDrive/Documents/University/Compiler Theory/Compiler-for-Small-Lang/test.txt");
             SmallLangV1Lexer lexer = new SmallLangV1Lexer(charStream);
             SmallLangV1Parser parserAntlr = new SmallLangV1Parser(new CommonTokenStream(lexer));
 
+            // cast result to AstProgramNode
             AstProgramNode program = (AstProgramNode) new HybridParserVisitor().visit(parserAntlr.prog());
 
             program.accept(xmlVisitor);
@@ -43,13 +44,10 @@ public class Main {
             System.exit(1);
         }
 
+        // * USING HAND_CRAFTED LEXER AND PARSER
         // Lexer.readInput(
         // "C:/Users/seand/OneDrive/Documents/University/Compiler
         // Theory/Compiler-for-Small-Lang/test.txt");
-        // tokens = Lexer.getNextToken();
-        // for (Token token : tokens) {
-        // System.out.println(token.lexeme+" : "+token.tokenIdentifier);
-        // }
         // AstProgramNode program = parser.parse();
 
         // // produce xml ast
