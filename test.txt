@@ -1,2 +1,10 @@
-let i:int = 5*3+(4/5);
-print i;
+ff XGreaterThanY(x:float,y:float):auto{
+    let ans:bool = true;
+    if(y>x){ ans = false; }
+    return ans;
+}
+
+let x:float = 2.4;
+let y:auto = 3.5;
+print y;                            
+print XGreaterThanY(x,2.3);
