@@ -83,7 +83,6 @@ public class Lexer {
             charCounter++;
 
             // ignore white spaces and count new lines.
-            // TODO: fix inline comment on last line bug
             if (currentChar == 32 && (currentState != 14 && currentState != 15 && currentState != 12)) {
                 break;
             } else if ((currentChar == '\n' || currentChar == 13) && currentState != 12) {
