@@ -4,6 +4,7 @@ import Lexer.*;
 import Visitor.InterpreterVisitor;
 import Visitor.SemanticAnalyser;
 import Visitor.XmlVisitor;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String args[]) {
@@ -11,17 +12,26 @@ public class Main {
         XmlVisitor xmlVisitor = new XmlVisitor();
         SemanticAnalyser semanticAnalyser = new SemanticAnalyser();
         InterpreterVisitor interpreter = new InterpreterVisitor();
+        Scanner sc = new Scanner(System.in);
 
-        Lexer.readInput("C:/Users/seand/Documents/University/Compiler Theory/Compiler-for-Small-Lang/test.txt");
+        System.out.println("********* SmallLang Compiler *********");
+        System.out.println("Enter Path to Program Text File:");
+        String filePath = sc.nextLine();
+        sc.close();
+
+        Lexer.readInput(filePath);
         AstProgramNode program = parser.parse();
 
         // produce xml ast
+        System.out.println("********* XML Output *********");
         program.accept(xmlVisitor);
 
         // check semantics
         program.accept(semanticAnalyser);
 
         // interpret program
+        System.out.println("********* Interpreter Output *********");
         program.accept(interpreter);
+
     }
 }
